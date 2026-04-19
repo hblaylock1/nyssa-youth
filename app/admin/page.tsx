@@ -1,0 +1,169 @@
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import { isAuthed } from "@/lib/auth";
+import { listRegistrations } from "@/lib/storage";
+import { WARDS } from "@/lib/wards";
+
+export const dynamic = "force-dynamic";
+
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ward?: string }>;
+}) {
+  if (!(await isAuthed())) redirect("/admin/login");
+
+  const { ward: wardFilter } = await searchParams;
+  const all = await listRegistrations();
+  const rows = wardFilter ? all.filter((r) => r.ward === wardFilter) : all;
+
+  const byWard = new Map<string, number>();
+  for (const r of all) byWard.set(r.ward, (byWard.get(r.ward) ?? 0) + 1);
+
+  const shirts = new Map<string, number>();
+  for (const r of rows) shirts.set(r.tshirtSize, (shirts.get(r.tshirtSize) ?? 0) + 1);
+
+  const exportHref = wardFilter
+    ? `/api/admin/export?ward=${encodeURIComponent(wardFilter)}`
+    : "/api/admin/export";
+
+  return (
+    <main className="mx-auto max-w-6xl px-4 py-8">
+      <header className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">NYS Admin</h1>
+          <p className="text-sm text-slate-600">
+            {all.length} total registrations{wardFilter ? ` • filtered to ${wardFilter}` : ""}
+          </p>
+        </div>
+        <form method="POST" action="/api/admin/logout">
+          <button className="btn-secondary text-sm">Sign out</button>
+        </form>
+      </header>
+
+      <section className="mt-6 grid gap-6 lg:grid-cols-3">
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-slate-700">By ward</h2>
+          <ul className="mt-3 space-y-1 text-sm">
+            <li>
+              <Link
+                href="/admin"
+                className={!wardFilter ? "font-semibold text-brand-700" : "text-slate-700 hover:underline"}
+              >
+                All wards ({all.length})
+              </Link>
+            </li>
+            {WARDS.map((w) => (
+              <li key={w}>
+                <Link
+                  href={`/admin?ward=${encodeURIComponent(w)}`}
+                  className={
+                    wardFilter === w
+                      ? "font-semibold text-brand-700"
+                      : "text-slate-700 hover:underline"
+                  }
+                >
+                  {w} ({byWard.get(w) ?? 0})
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-slate-700">T-shirt counts</h2>
+          {shirts.size === 0 ? (
+            <p className="mt-3 text-sm text-slate-500">No registrations yet.</p>
+          ) : (
+            <ul className="mt-3 grid grid-cols-3 gap-2 text-sm">
+              {[...shirts.entries()].sort().map(([size, n]) => (
+                <li
+                  key={size}
+                  className="rounded bg-slate-100 px-2 py-1 text-center font-medium text-slate-700"
+                >
+                  {size}: {n}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-slate-700">Export</h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Download a CSV of the{wardFilter ? " selected ward's" : " full"} roster.
+          </p>
+          <a href={exportHref} className="btn-primary mt-3 w-full">Download CSV</a>
+        </div>
+      </section>
+
+      <section className="mt-8 rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <tr>
+                <Th>Youth</Th>
+                <Th>Ward</Th>
+                <Th>Shirt</Th>
+                <Th>Parent</Th>
+                <Th>Contact</Th>
+                <Th>Signed</Th>
+                <Th>PDF</Th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {rows.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-8 text-center text-slate-500">
+                    No registrations{wardFilter ? ` for ${wardFilter}` : ""} yet.
+                  </td>
+                </tr>
+              ) : (
+                rows.map((r) => (
+                  <tr key={r.id}>
+                    <Td>
+                      <div className="font-medium text-slate-900">
+                        {r.youthFirstName} {r.youthLastName}
+                      </div>
+                      <div className="text-xs text-slate-500">{r.youthBirthdate}</div>
+                    </Td>
+                    <Td>{r.ward}</Td>
+                    <Td>{r.tshirtSize}</Td>
+                    <Td>
+                      <div>{r.parentName}</div>
+                      <div className="text-xs text-slate-500">{r.parentEmail}</div>
+                    </Td>
+                    <Td>
+                      <div>{r.parentPhone}</div>
+                      <div className="text-xs text-slate-500">
+                        ICE: {r.emergencyName} • {r.emergencyPhone}
+                      </div>
+                    </Td>
+                    <Td className="whitespace-nowrap text-xs text-slate-500">
+                      {new Date(r.signedAt).toLocaleString()}
+                    </Td>
+                    <Td>
+                      <a
+                        href={`/api/admin/pdf/${r.id}`}
+                        className="text-brand-600 hover:underline"
+                      >
+                        Download
+                      </a>
+                    </Td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function Th({ children }: { children: React.ReactNode }) {
+  return <th className="px-4 py-3">{children}</th>;
+}
+function Td({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <td className={`px-4 py-3 align-top ${className ?? ""}`}>{children}</td>;
+}
