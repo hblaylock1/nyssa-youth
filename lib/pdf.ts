@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { PDFDocument } from "pdf-lib";
 import type { NewRegistration } from "./types";
 
 const TEMPLATE_PATH = path.join(
@@ -9,97 +9,121 @@ const TEMPLATE_PATH = path.join(
   "parental_or_guardian_permission_medical_release.pdf",
 );
 
-/**
- * Build the signed PDF.
- * If public/permission-slip.pdf exists we stamp the signature + a summary page
- * onto the last page of that template; otherwise we generate a standalone
- * permission form so the site is usable before the church PDF is dropped in.
- */
+// Edit these once the event details are finalized; they flow into the
+// corresponding fields of every generated permission slip.
+const EVENT_INFO = {
+  event: "Nyssa Youth Spectacular",
+  datesOfEvent: "",
+  description: "",
+  stake: "",
+  leader: "",
+  leaderPhone: "",
+  leaderEmail: "",
+};
+
 export async function buildSignedPdf(data: NewRegistration): Promise<Uint8Array> {
   const signaturePng = dataUrlToBytes(data.signatureDataUrl);
+  const templateBytes = await fs.readFile(TEMPLATE_PATH);
+  const pdf = await PDFDocument.load(templateBytes);
 
-  let pdf: PDFDocument;
-  let hasTemplate = false;
-  try {
-    const templateBytes = await fs.readFile(TEMPLATE_PATH);
-    pdf = await PDFDocument.load(templateBytes);
-    hasTemplate = true;
-  } catch {
-    pdf = await PDFDocument.create();
-  }
+  // The form is page 1; page 2 is instructions only — drop it.
+  while (pdf.getPageCount() > 1) pdf.removePage(1);
 
-  const font = await pdf.embedFont(StandardFonts.Helvetica);
-  const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
-  const sigImage = await pdf.embedPng(signaturePng);
+  const form = pdf.getForm();
+  const today = new Date().toLocaleDateString();
 
-  // Always add a summary page so every field is captured even if the template
-  // field coords haven't been mapped yet.
-  const summary = pdf.addPage([612, 792]);
-  let y = 750;
-  const line = 18;
-  const drawHeader = (text: string) => {
-    summary.drawText(text, { x: 50, y, size: 16, font: bold, color: rgb(0, 0, 0) });
-    y -= line * 1.5;
-  };
-  const drawRow = (label: string, value: string) => {
-    summary.drawText(`${label}:`, { x: 50, y, size: 11, font: bold });
-    summary.drawText(value || "—", { x: 170, y, size: 11, font, maxWidth: 380 });
-    y -= line;
-  };
-
-  drawHeader("Nyssa Youth Spectacular — Registration & Permission");
-  drawRow("Youth name", `${data.youthFirstName} ${data.youthLastName}`);
-  drawRow("Birthdate", data.youthBirthdate);
-  drawRow("Gender", data.youthGender);
-  drawRow("Ward", data.ward);
-  drawRow("T-shirt size", data.tshirtSize);
-  drawRow("Allergies", data.allergies);
-  drawRow("Medical notes", data.medicalNotes);
-  y -= line / 2;
-  drawRow("Parent / guardian", data.parentName);
-  drawRow("Parent email", data.parentEmail);
-  drawRow("Parent phone", data.parentPhone);
-  drawRow("Emergency contact", data.emergencyName);
-  drawRow("Emergency phone", data.emergencyPhone);
-
-  y -= line;
-  summary.drawText("Signature:", { x: 50, y, size: 11, font: bold });
-  const sigDims = sigImage.scaleToFit(260, 70);
-  summary.drawImage(sigImage, { x: 170, y: y - 55, width: sigDims.width, height: sigDims.height });
-  summary.drawLine({
-    start: { x: 170, y: y - 60 },
-    end: { x: 430, y: y - 60 },
-    thickness: 0.5,
-    color: rgb(0.5, 0.5, 0.5),
-  });
-  y -= 80;
-  drawRow("Signed by (typed)", data.signatureName);
-  drawRow("Signed at", new Date().toLocaleString());
-
-  // If a template PDF is present, also stamp the signature onto its last page
-  // so the church's permission slip carries a visible e-signature.
-  if (hasTemplate) {
-    const pages = pdf.getPages();
-    const last = pages[pages.length - 1 - 1] ?? pages[0]; // skip summary (last)
-    if (last) {
-      const { width } = last.getSize();
-      last.drawImage(sigImage, {
-        x: width - 280,
-        y: 60,
-        width: 220,
-        height: 60,
-      });
-      last.drawText(`${data.signatureName}  •  ${new Date().toLocaleDateString()}`, {
-        x: width - 280,
-        y: 50,
-        size: 9,
-        font,
-        color: rgb(0, 0, 0),
-      });
+  const setText = (name: string, value: string) => {
+    try {
+      form.getTextField(name).setText(value);
+    } catch {
+      // field missing in this template version — skip
     }
-  }
+  };
+  const setCheck = (name: string, checked: boolean) => {
+    try {
+      const f = form.getCheckBox(name);
+      if (checked) f.check();
+      else f.uncheck();
+    } catch {
+      // skip
+    }
+  };
 
+  setText("Event", EVENT_INFO.event);
+  setText("Dates of event", EVENT_INFO.datesOfEvent);
+  setText("Event description", EVENT_INFO.description);
+  setText("Ward", data.ward);
+  setText("Stake", EVENT_INFO.stake);
+  setText("Event or activity leader", EVENT_INFO.leader);
+  setText("Event or activity leaders phone number", EVENT_INFO.leaderPhone);
+  setText("Event or activity leaders email", EVENT_INFO.leaderEmail);
+
+  setText("Participant", `${data.youthFirstName} ${data.youthLastName}`);
+  setText("Date of birth", data.youthBirthdate);
+  setText("Age", calcAge(data.youthBirthdate));
+  setText("Telephone number", data.parentPhone);
+  setText("Emergency contact parent or guardian", data.parentName);
+  setText("Primary phone_1", data.parentPhone);
+  setText("Secondary phone_1", data.emergencyPhone);
+
+  const allergies = (data.allergies ?? "").trim();
+  setCheck("Allergies", allergies.length > 0);
+  setText("Allergy explanation", allergies);
+  setText("List of Medications", data.medicalNotes ?? "");
+
+  setText("Date", today);
+  setText("Date_2", today);
+
+  // Stamp the drawn signature image on top of the parent/guardian signature
+  // field. We leave the field text empty and flatten afterwards so the image
+  // is the visible signature.
+  const sigImage = await pdf.embedPng(signaturePng);
+  stampSignature(
+    pdf,
+    form,
+    "Parent or guardians signature if participant is a minor",
+    sigImage,
+  );
+
+  form.flatten();
   return pdf.save();
+}
+
+function stampSignature(
+  pdf: PDFDocument,
+  form: ReturnType<PDFDocument["getForm"]>,
+  fieldName: string,
+  image: Awaited<ReturnType<PDFDocument["embedPng"]>>,
+) {
+  try {
+    const field = form.getTextField(fieldName);
+    const widget = field.acroField.getWidgets()[0];
+    if (!widget) return;
+    const rect = widget.getRectangle();
+    const page = pdf.getPages()[0];
+    const padding = 2;
+    const boxW = Math.max(rect.width - padding * 2, 1);
+    const boxH = Math.max(rect.height - padding * 2, 1);
+    const dims = image.scaleToFit(boxW, boxH);
+    page.drawImage(image, {
+      x: rect.x + (rect.width - dims.width) / 2,
+      y: rect.y + (rect.height - dims.height) / 2,
+      width: dims.width,
+      height: dims.height,
+    });
+  } catch {
+    // field missing — skip stamping
+  }
+}
+
+function calcAge(birthdate: string): string {
+  const d = new Date(birthdate);
+  if (Number.isNaN(d.getTime())) return "";
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  const m = now.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age -= 1;
+  return String(age);
 }
 
 function dataUrlToBytes(dataUrl: string): Uint8Array {
