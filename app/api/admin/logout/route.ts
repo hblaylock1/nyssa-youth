@@ -3,7 +3,10 @@ import { clearSession } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
-export async function POST(req: Request) {
+export async function POST() {
   await clearSession();
-  return NextResponse.redirect(new URL("/admin/login", req.url), { status: 303 });
+  return new NextResponse(null, {
+    status: 303,
+    headers: { Location: "/admin/login" },
+  });
 }
