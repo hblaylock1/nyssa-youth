@@ -161,9 +161,6 @@ export default async function AdminPage({
                     </Td>
                     <Td>
                       <div>{r.parentPhone}</div>
-                      <div className="text-xs text-slate-500">
-                        ICE: {r.emergencyName} • {r.emergencyPhone}
-                      </div>
                     </Td>
                     <Td className="whitespace-nowrap text-xs text-slate-500">
                       {new Date(r.signedAt).toLocaleString()}

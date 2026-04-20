@@ -163,7 +163,14 @@ export default function RegistrationForm({ wards, sizes }: Props) {
         />
       </TableSection>
 
-      <Section title="Parent / guardian">
+      <TableSection title="Other Accommodations or Special Needs">
+        <FullRow
+          label="Identify any other needs or considerations the participant has that the event or activity planner should be aware of."
+          name="specialNeeds"
+        />
+      </TableSection>
+
+      <Section title="Parent / guardian (also emergency contact)">
         <Grid>
           <Field label="Full name" name="parentName" required />
           <Field label="Email" name="parentEmail" type="email" required />
@@ -171,19 +178,45 @@ export default function RegistrationForm({ wards, sizes }: Props) {
         </Grid>
       </Section>
 
-      <Section title="Emergency contact">
-        <Grid>
-          <Field label="Name" name="emergencyName" required />
-          <Field label="Phone" name="emergencyPhone" type="tel" required />
-        </Grid>
-      </Section>
-
       <Section title="Permission & signature">
-        <p className="text-sm text-slate-600">
-          By signing below I give permission for my youth to attend the
-          Nyssa Youth Spectacular, and I authorize leaders to seek emergency
-          medical care if needed.
-        </p>
+        <div className="space-y-3 rounded-md bg-slate-50 p-4 text-sm text-slate-700">
+          <p>
+            I give permission for my child or youth (or if signing on my own
+            behalf, as a leader attending this activity, I personally consent)
+            to participate in the event and activities listed above (unless
+            noted) and authorize the adult leaders supervising this event to
+            administer emergency treatment to the above-named participant for
+            any accident or illness and to act in my stead in approving
+            necessary medical care. This authorization shall cover this event
+            and travel to and from this event.
+          </p>
+          <p>
+            <em className="font-semibold">Please note:</em> Units may not have
+            the ability to meet all medical, physical, and other
+            accommodations and are asked to counsel with parents or guardians
+            on what is possible.
+          </p>
+          <p>
+            The participant is responsible for his or her own conduct and is
+            aware of and agrees to abide by Church standards, camp or event
+            safety rules, and other pertinent instructions. The
+            participant&apos;s conduct and interactions should abide by Church
+            standards and exemplify Christlike behavior, including those
+            listed on the attached &ldquo;Conduct at Church Activities.&rdquo;
+          </p>
+          <p>
+            Parents and participants should understand that participation in
+            an activity is not a right but a privilege that can be revoked if
+            participants behave inappropriately or if they pose a risk to
+            themselves or others.
+          </p>
+          <p>
+            This information is collected to help event and activity leaders
+            or medical personnel so they can be prepared and appropriately
+            respond to health concerns or an emergency. It will be kept
+            confidential and shared only as needed.
+          </p>
+        </div>
 
         <div>
           <label className="label" htmlFor="signatureName">

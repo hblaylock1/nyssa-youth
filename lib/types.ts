@@ -27,13 +27,12 @@ export interface Registration {
   chronicIllness: boolean;
   illnessExplanation: string;
   otherLimitations: string;
+  specialNeeds: string;
 
-  // Contacts
+  // Parent / guardian (also serves as emergency contact)
   parentName: string;
   parentEmail: string;
   parentPhone: string;
-  emergencyName: string;
-  emergencyPhone: string;
 
   // Signature
   signatureName: string;

@@ -19,8 +19,6 @@ const REQUIRED_STRING: (keyof NewRegistration)[] = [
   "parentName",
   "parentEmail",
   "parentPhone",
-  "emergencyName",
-  "emergencyPhone",
   "signatureName",
   "signatureDataUrl",
 ];
@@ -74,11 +72,10 @@ export async function POST(req: Request) {
     chronicIllness: bool(body.chronicIllness),
     illnessExplanation: str(body.illnessExplanation),
     otherLimitations: str(body.otherLimitations),
+    specialNeeds: str(body.specialNeeds),
     parentName: body.parentName!,
     parentEmail: body.parentEmail!,
     parentPhone: body.parentPhone!,
-    emergencyName: body.emergencyName!,
-    emergencyPhone: body.emergencyPhone!,
     signatureName: body.signatureName!,
     signatureDataUrl: body.signatureDataUrl!,
   };

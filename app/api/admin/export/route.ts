@@ -28,11 +28,10 @@ const COLUMNS: { key: keyof Row; label: string }[] = [
   { key: "chronicIllness", label: "Chronic illness?" },
   { key: "illnessExplanation", label: "Illness notes" },
   { key: "otherLimitations", label: "Other limitations" },
+  { key: "specialNeeds", label: "Other accommodations / special needs" },
   { key: "parentName", label: "Parent" },
   { key: "parentEmail", label: "Parent email" },
   { key: "parentPhone", label: "Parent phone" },
-  { key: "emergencyName", label: "Emergency contact" },
-  { key: "emergencyPhone", label: "Emergency phone" },
   { key: "signatureName", label: "Signed by" },
   { key: "signedAt", label: "Signed at" },
 ];
