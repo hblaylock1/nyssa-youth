@@ -16,6 +16,7 @@ export interface Registration {
   state: string;
 
   // Medical
+  hasAllergies: boolean;
   allergies: string;
   medications: string;
   specialDiet: boolean;
@@ -25,7 +26,6 @@ export interface Registration {
   surgeryExplanation: string;
   chronicIllness: boolean;
   illnessExplanation: string;
-  specialNeeds: string;
   otherLimitations: string;
 
   // Contacts

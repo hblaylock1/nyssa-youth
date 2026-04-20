@@ -70,7 +70,7 @@ export async function buildSignedPdf(data: NewRegistration): Promise<Uint8Array>
   setText("Secondary phone_1", data.emergencyPhone);
 
   const allergies = (data.allergies ?? "").trim();
-  setCheck("Allergies", allergies.length > 0);
+  setCheck("Allergies", data.hasAllergies);
   setText("Allergy explanation", allergies);
   setText("List of Medications", data.medications ?? "");
 
@@ -81,7 +81,6 @@ export async function buildSignedPdf(data: NewRegistration): Promise<Uint8Array>
   setText("If yes please explain_2", data.surgeryExplanation ?? "");
   setCheck("Chronic illness", data.chronicIllness);
   setText("illness explanation", data.illnessExplanation ?? "");
-  setText("Special needs", data.specialNeeds ?? "");
   setText("Other limitations", data.otherLimitations ?? "");
 
   setText("Date", today);

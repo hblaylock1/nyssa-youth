@@ -38,6 +38,7 @@ export default function RegistrationForm({ wards, sizes }: Props) {
     const body = {
       ...raw,
       specialDiet: bool("specialDiet"),
+      hasAllergies: bool("hasAllergies"),
       selfAdminMeds: bool("selfAdminMeds"),
       recentSurgery: bool("recentSurgery"),
       chronicIllness: bool("chronicIllness"),
@@ -119,52 +120,48 @@ export default function RegistrationForm({ wards, sizes }: Props) {
         </Grid>
       </Section>
 
-      <Section title="Medical">
-        <Field
-          label="Allergies"
-          name="allergies"
-          placeholder="List any food or environmental allergies"
-        />
-        <Field
-          label="List of medications"
-          name="medications"
-          placeholder="Prescription or over-the-counter medications"
-        />
-
-        <CheckboxWithExplanation
+      <TableSection title="Medical Information">
+        <QARow
+          question="Does the participant require a special diet?"
           name="specialDiet"
           explanationName="dietExplanation"
-          label="Special diet"
-          placeholder="Describe the dietary needs"
+          explanationLabel="If yes, please explain the dietary restrictions."
         />
-        <Checkbox
+        <QARow
+          question="Does the participant have any allergies?"
+          name="hasAllergies"
+          explanationName="allergies"
+          explanationLabel="If yes, please list the allergies."
+        />
+        <FullRow
+          label="List all prescription or over-the-counter (OTC) medications the participant is taking. Leave blank if none."
+          name="medications"
+        />
+        <YesNoNoteRow
+          question="Can the participant self-administer his or her medication?"
           name="selfAdminMeds"
-          label="Youth can self-administer medications"
+          note="If no, please contact the event or activity leader directly."
         />
-        <CheckboxWithExplanation
-          name="recentSurgery"
-          explanationName="surgeryExplanation"
-          label="Recent surgery"
-          placeholder="When and what kind"
-        />
-        <CheckboxWithExplanation
+      </TableSection>
+
+      <TableSection title="Conditions That Limit Activity">
+        <QARow
+          question="Does the participant have a chronic or recurring illness?"
           name="chronicIllness"
           explanationName="illnessExplanation"
-          label="Chronic illness"
-          placeholder="Describe the condition"
+          explanationLabel="If yes, please explain."
         />
-
-        <Field
-          label="Special needs"
-          name="specialNeeds"
-          placeholder="Anything leaders should accommodate"
+        <QARow
+          question="Has the participant had surgery or a serious illness in the past year?"
+          name="recentSurgery"
+          explanationName="surgeryExplanation"
+          explanationLabel="If yes, please explain."
         />
-        <Field
-          label="Other limitations"
+        <FullRow
+          label="Identify any other limits, restrictions, or disabilities that could prevent the participant from fully participating in the event or activity."
           name="otherLimitations"
-          placeholder="Physical or other limitations"
         />
-      </Section>
+      </TableSection>
 
       <Section title="Parent / guardian">
         <Grid>
@@ -245,6 +242,23 @@ function Section({
   );
 }
 
+function TableSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+      <h2 className="border-b border-slate-200 bg-slate-50 px-6 py-3 text-base font-semibold text-slate-900">
+        {title}
+      </h2>
+      <div className="divide-y divide-slate-200">{children}</div>
+    </section>
+  );
+}
+
 function Grid({ children }: { children: React.ReactNode }) {
   return <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>;
 }
@@ -311,39 +325,79 @@ function Select({
   );
 }
 
-function Checkbox({ name, label }: { name: string; label: string }) {
+function YesNo({ name, required = true }: { name: string; required?: boolean }) {
+  const radio =
+    "h-4 w-4 border-slate-300 text-brand-600 focus:ring-brand-500";
   return (
-    <label className="flex items-center gap-2 text-sm text-slate-700">
-      <input
-        type="checkbox"
-        name={name}
-        value="yes"
-        className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
-      />
-      {label}
-    </label>
+    <div className="flex items-center gap-4 text-sm text-slate-700">
+      <label className="inline-flex items-center gap-1.5">
+        <input type="radio" name={name} value="yes" required={required} className={radio} />
+        Yes
+      </label>
+      <label className="inline-flex items-center gap-1.5">
+        <input type="radio" name={name} value="no" required={required} className={radio} />
+        No
+      </label>
+    </div>
   );
 }
 
-function CheckboxWithExplanation({
+function QARow({
+  question,
   name,
   explanationName,
-  label,
-  placeholder,
+  explanationLabel,
 }: {
+  question: string;
   name: string;
   explanationName: string;
-  label: string;
-  placeholder?: string;
+  explanationLabel: string;
 }) {
   return (
-    <div className="space-y-2">
-      <Checkbox name={name} label={label} />
-      <input
-        name={explanationName}
-        placeholder={placeholder}
-        className="field"
-      />
+    <div className="grid grid-cols-1 md:grid-cols-2">
+      <div className="border-b border-slate-200 p-4 md:border-b-0 md:border-r">
+        <p className="text-sm font-medium text-slate-800">{question}</p>
+        <div className="mt-2">
+          <YesNo name={name} />
+        </div>
+      </div>
+      <div className="p-4">
+        <label htmlFor={explanationName} className="mb-2 block text-sm text-slate-600">
+          {explanationLabel}
+        </label>
+        <input id={explanationName} name={explanationName} className="field" />
+      </div>
+    </div>
+  );
+}
+
+function YesNoNoteRow({
+  question,
+  name,
+  note,
+}: {
+  question: string;
+  name: string;
+  note: string;
+}) {
+  return (
+    <div className="p-4">
+      <p className="text-sm font-medium text-slate-800">{question}</p>
+      <div className="mt-2 flex flex-wrap items-center gap-4">
+        <YesNo name={name} />
+        <span className="text-sm text-slate-600">{note}</span>
+      </div>
+    </div>
+  );
+}
+
+function FullRow({ label, name }: { label: string; name: string }) {
+  return (
+    <div className="p-4">
+      <label htmlFor={name} className="mb-2 block text-sm font-medium text-slate-800">
+        {label}
+      </label>
+      <input id={name} name={name} className="field" />
     </div>
   );
 }
