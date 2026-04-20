@@ -113,16 +113,23 @@ function stampSignature(
     if (!widget) return;
     const rect = widget.getRectangle();
     const page = pdf.getPages()[0];
-    const padding = 2;
-    const boxW = Math.max(rect.width - padding * 2, 1);
-    const boxH = Math.max(rect.height - padding * 2, 1);
-    const dims = image.scaleToFit(boxW, boxH);
-    page.drawImage(image, {
-      x: rect.x + (rect.width - dims.width) / 2,
-      y: rect.y + (rect.height - dims.height) / 2,
-      width: dims.width,
-      height: dims.height,
-    });
+
+    // The field rectangle is only a text-line tall, which would crush the
+    // signature. Draw it at a readable height (up to ~45pt) centered on the
+    // field's width and allow it to extend above the field into the margin.
+    const targetHeight = 45;
+    const aspect = image.width / image.height;
+    const maxWidth = Math.max(rect.width - 4, 1);
+    let drawHeight = targetHeight;
+    let drawWidth = drawHeight * aspect;
+    if (drawWidth > maxWidth) {
+      drawWidth = maxWidth;
+      drawHeight = drawWidth / aspect;
+    }
+    const x = rect.x + (rect.width - drawWidth) / 2;
+    // Anchor to the bottom of the field so the signature sits on the line.
+    const y = rect.y;
+    page.drawImage(image, { x, y, width: drawWidth, height: drawHeight });
   } catch {
     // field missing — skip stamping
   }
