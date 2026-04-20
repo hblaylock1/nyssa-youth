@@ -3,7 +3,11 @@ import path from "node:path";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import type { NewRegistration } from "./types";
 
-const TEMPLATE_PATH = path.join(process.cwd(), "public", "permission-slip.pdf");
+const TEMPLATE_PATH = path.join(
+  process.cwd(),
+  "public",
+  "parental_or_guardian_permission_medical_release.pdf",
+);
 
 /**
  * Build the signed PDF.
