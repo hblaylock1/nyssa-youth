@@ -4,7 +4,9 @@ import { listRegistrations } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
-const COLUMNS: { key: keyof Awaited<ReturnType<typeof listRegistrations>>[number]; label: string }[] = [
+type Row = Awaited<ReturnType<typeof listRegistrations>>[number];
+
+const COLUMNS: { key: keyof Row; label: string }[] = [
   { key: "createdAt", label: "Registered at" },
   { key: "ward", label: "Ward" },
   { key: "youthFirstName", label: "Youth first" },
@@ -12,8 +14,20 @@ const COLUMNS: { key: keyof Awaited<ReturnType<typeof listRegistrations>>[number
   { key: "youthBirthdate", label: "Birthdate" },
   { key: "youthGender", label: "Gender" },
   { key: "tshirtSize", label: "Shirt" },
+  { key: "address", label: "Address" },
+  { key: "city", label: "City" },
+  { key: "state", label: "State" },
   { key: "allergies", label: "Allergies" },
-  { key: "medicalNotes", label: "Medical" },
+  { key: "medications", label: "Medications" },
+  { key: "specialDiet", label: "Special diet?" },
+  { key: "dietExplanation", label: "Diet notes" },
+  { key: "selfAdminMeds", label: "Self-admin meds?" },
+  { key: "recentSurgery", label: "Recent surgery?" },
+  { key: "surgeryExplanation", label: "Surgery notes" },
+  { key: "chronicIllness", label: "Chronic illness?" },
+  { key: "illnessExplanation", label: "Illness notes" },
+  { key: "specialNeeds", label: "Special needs" },
+  { key: "otherLimitations", label: "Other limitations" },
   { key: "parentName", label: "Parent" },
   { key: "parentEmail", label: "Parent email" },
   { key: "parentPhone", label: "Parent phone" },
@@ -24,6 +38,8 @@ const COLUMNS: { key: keyof Awaited<ReturnType<typeof listRegistrations>>[number
 ];
 
 function csvEscape(v: unknown): string {
+  if (v === true) return "Yes";
+  if (v === false) return "No";
   const s = v == null ? "" : String(v);
   if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
   return s;

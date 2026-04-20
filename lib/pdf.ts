@@ -62,6 +62,9 @@ export async function buildSignedPdf(data: NewRegistration): Promise<Uint8Array>
   setText("Date of birth", data.youthBirthdate);
   setText("Age", calcAge(data.youthBirthdate));
   setText("Telephone number", data.parentPhone);
+  setText("Address", data.address);
+  setText("City", data.city);
+  setText("State or Province", data.state);
   setText("Emergency contact parent or guardian", data.parentName);
   setText("Primary phone_1", data.parentPhone);
   setText("Secondary phone_1", data.emergencyPhone);
@@ -69,7 +72,17 @@ export async function buildSignedPdf(data: NewRegistration): Promise<Uint8Array>
   const allergies = (data.allergies ?? "").trim();
   setCheck("Allergies", allergies.length > 0);
   setText("Allergy explanation", allergies);
-  setText("List of Medications", data.medicalNotes ?? "");
+  setText("List of Medications", data.medications ?? "");
+
+  setCheck("Special diet", data.specialDiet);
+  setText("diet explanation", data.dietExplanation ?? "");
+  setCheck("Self Admin", data.selfAdminMeds);
+  setCheck("Surgery", data.recentSurgery);
+  setText("If yes please explain_2", data.surgeryExplanation ?? "");
+  setCheck("Chronic illness", data.chronicIllness);
+  setText("illness explanation", data.illnessExplanation ?? "");
+  setText("Special needs", data.specialNeeds ?? "");
+  setText("Other limitations", data.otherLimitations ?? "");
 
   setText("Date", today);
   setText("Date_2", today);

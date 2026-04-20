@@ -1,24 +1,49 @@
 export interface Registration {
   id: string;
   createdAt: string;
+
+  // Youth
   youthFirstName: string;
   youthLastName: string;
   youthBirthdate: string;
   youthGender: string;
   ward: string;
   tshirtSize: string;
+
+  // Address
+  address: string;
+  city: string;
+  state: string;
+
+  // Medical
   allergies: string;
-  medicalNotes: string;
+  medications: string;
+  specialDiet: boolean;
+  dietExplanation: string;
+  selfAdminMeds: boolean;
+  recentSurgery: boolean;
+  surgeryExplanation: string;
+  chronicIllness: boolean;
+  illnessExplanation: string;
+  specialNeeds: string;
+  otherLimitations: string;
+
+  // Contacts
   parentName: string;
   parentEmail: string;
   parentPhone: string;
   emergencyName: string;
   emergencyPhone: string;
+
+  // Signature
   signatureName: string;
   signedAt: string;
-  pdfFile: string; // filename stored on disk
+  pdfFile: string;
 }
 
-export type NewRegistration = Omit<Registration, "id" | "createdAt" | "pdfFile" | "signedAt"> & {
-  signatureDataUrl: string; // PNG data URL from the signature pad
+export type NewRegistration = Omit<
+  Registration,
+  "id" | "createdAt" | "pdfFile" | "signedAt"
+> & {
+  signatureDataUrl: string;
 };

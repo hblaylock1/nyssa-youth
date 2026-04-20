@@ -32,14 +32,24 @@ export default function RegistrationForm({ wards, sizes }: Props) {
 
     const form = e.currentTarget;
     const fd = new FormData(form);
-    const body = Object.fromEntries(fd.entries()) as Record<string, string>;
+    const raw = Object.fromEntries(fd.entries()) as Record<string, string>;
+
+    const bool = (name: string) => fd.get(name) === "yes";
+    const body = {
+      ...raw,
+      specialDiet: bool("specialDiet"),
+      selfAdminMeds: bool("selfAdminMeds"),
+      recentSurgery: bool("recentSurgery"),
+      chronicIllness: bool("chronicIllness"),
+      signatureDataUrl,
+    };
 
     setSubmitting(true);
     try {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...body, signatureDataUrl }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) {
         const msg = await res.text();
@@ -99,15 +109,60 @@ export default function RegistrationForm({ wards, sizes }: Props) {
           <Select label="Ward / branch" name="ward" required options={wards} />
           <Select label="T-shirt size" name="tshirtSize" required options={sizes} />
         </Grid>
+      </Section>
+
+      <Section title="Address">
+        <Field label="Street address" name="address" required />
+        <Grid>
+          <Field label="City" name="city" required />
+          <Field label="State" name="state" required />
+        </Grid>
+      </Section>
+
+      <Section title="Medical">
         <Field
           label="Allergies"
           name="allergies"
           placeholder="List any food or environmental allergies"
         />
         <Field
-          label="Medical notes"
-          name="medicalNotes"
-          placeholder="Medications, conditions, or anything leaders should know"
+          label="List of medications"
+          name="medications"
+          placeholder="Prescription or over-the-counter medications"
+        />
+
+        <CheckboxWithExplanation
+          name="specialDiet"
+          explanationName="dietExplanation"
+          label="Special diet"
+          placeholder="Describe the dietary needs"
+        />
+        <Checkbox
+          name="selfAdminMeds"
+          label="Youth can self-administer medications"
+        />
+        <CheckboxWithExplanation
+          name="recentSurgery"
+          explanationName="surgeryExplanation"
+          label="Recent surgery"
+          placeholder="When and what kind"
+        />
+        <CheckboxWithExplanation
+          name="chronicIllness"
+          explanationName="illnessExplanation"
+          label="Chronic illness"
+          placeholder="Describe the condition"
+        />
+
+        <Field
+          label="Special needs"
+          name="specialNeeds"
+          placeholder="Anything leaders should accommodate"
+        />
+        <Field
+          label="Other limitations"
+          name="otherLimitations"
+          placeholder="Physical or other limitations"
         />
       </Section>
 
@@ -252,6 +307,43 @@ function Select({
           </option>
         ))}
       </select>
+    </div>
+  );
+}
+
+function Checkbox({ name, label }: { name: string; label: string }) {
+  return (
+    <label className="flex items-center gap-2 text-sm text-slate-700">
+      <input
+        type="checkbox"
+        name={name}
+        value="yes"
+        className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+      />
+      {label}
+    </label>
+  );
+}
+
+function CheckboxWithExplanation({
+  name,
+  explanationName,
+  label,
+  placeholder,
+}: {
+  name: string;
+  explanationName: string;
+  label: string;
+  placeholder?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <Checkbox name={name} label={label} />
+      <input
+        name={explanationName}
+        placeholder={placeholder}
+        className="field"
+      />
     </div>
   );
 }
