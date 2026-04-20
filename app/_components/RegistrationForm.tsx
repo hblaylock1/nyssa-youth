@@ -75,6 +75,19 @@ export default function RegistrationForm({ wards, sizes }: Props) {
           Thanks — we&apos;ve recorded the permission slip. You can download a
           signed copy below for your records.
         </p>
+        <p className="mt-3 rounded-md bg-amber-50 p-3 text-sm text-amber-900">
+          <span className="font-semibold">Don&apos;t forget the $35 fee.</span>{" "}
+          Pay online at{" "}
+          <a
+            href="https://donations.churchofjesuschrist.org/"
+            target="_blank"
+            rel="noreferrer"
+            className="underline font-medium"
+          >
+            donations.churchofjesuschrist.org
+          </a>{" "}
+          under <span className="font-semibold">Local — Youth Camp Registration</span>.
+        </p>
         <div className="mt-4 flex gap-3">
           <a
             className="btn-primary"
@@ -177,6 +190,38 @@ export default function RegistrationForm({ wards, sizes }: Props) {
           <Field label="Phone" name="parentPhone" type="tel" required />
         </Grid>
       </Section>
+
+      <section className="rounded-lg border border-amber-300 bg-amber-50 p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-amber-900">
+          Registration fee: $35 per youth
+        </h2>
+        <p className="mt-2 text-sm text-amber-900">
+          Pay online through the Church&apos;s donations portal. On the
+          donation slip, enter <span className="font-semibold">$35</span> in
+          the <span className="font-semibold">Local — Youth Camp
+          Registration</span> line.
+        </p>
+        <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-amber-900">
+          <li>
+            Sign in at{" "}
+            <a
+              href="https://donations.churchofjesuschrist.org/"
+              target="_blank"
+              rel="noreferrer"
+              className="underline font-medium"
+            >
+              donations.churchofjesuschrist.org
+            </a>{" "}
+            (or use the Member Tools app).
+          </li>
+          <li>Start a new donation for your ward.</li>
+          <li>
+            Put <span className="font-semibold">$35</span> under{" "}
+            <span className="font-semibold">Local — Youth Camp Registration</span>.
+          </li>
+          <li>Submit the donation.</li>
+        </ol>
+      </section>
 
       <Section title="Permission & signature">
         <div className="space-y-3 rounded-md bg-slate-50 p-4 text-sm text-slate-700">
