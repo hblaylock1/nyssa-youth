@@ -13,11 +13,11 @@ const TEMPLATE_PATH = path.join(
 // corresponding fields of every generated permission slip.
 const EVENT_INFO = {
   event: "Nyssa Youth Spectacular",
-  datesOfEvent: "",
+  datesOfEvent: "06/06/2026",
   description: "",
-  stake: "",
-  leader: "",
-  leaderPhone: "",
+  stake: "Nyssa Stake",
+  leader: "Kurt Romans",
+  leaderPhone: "541-212-0409",
   leaderEmail: "",
 };
 
