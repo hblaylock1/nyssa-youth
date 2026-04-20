@@ -97,6 +97,32 @@ export default async function AdminPage({
         </div>
       </section>
 
+      <section className="mt-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-sm font-semibold text-slate-700">Registration QR code</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Share this QR on flyers or post it in the ward building. Parents
+              scan it to reach the registration form.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-3">
+              <Link href="/share" className="btn-primary">
+                Open share / print page
+              </Link>
+              <a href="/qr-code.jpg" download className="btn-secondary">
+                Download QR image
+              </a>
+            </div>
+          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/qr-code.jpg"
+            alt="QR code to the NYS registration page"
+            className="h-32 w-32 rounded border border-slate-200 object-contain"
+          />
+        </div>
+      </section>
+
       <section className="mt-8 rounded-lg border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">

@@ -21,7 +21,11 @@ export default function Page() {
 
       <RegistrationForm wards={[...WARDS]} sizes={[...TSHIRT_SIZES]} />
 
-      <footer className="mt-10 text-center text-sm text-slate-500">
+      <footer className="mt-10 flex justify-center gap-4 text-center text-sm text-slate-500">
+        <Link href="/share" className="underline hover:text-slate-700">
+          Share / print
+        </Link>
+        <span>·</span>
         <Link href="/admin" className="underline hover:text-slate-700">
           Admin
         </Link>
