@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
-import { checkPassword, createSession } from "@/lib/auth";
+import {
+  checkAdminPassword,
+  checkWardPassword,
+  createSession,
+} from "@/lib/auth";
+import { WARDS } from "@/lib/wards";
 
 export const runtime = "nodejs";
 
 function redirectTo(path: string) {
-  // Use a relative Location so the browser resolves against the request's
-  // public URL (otherwise new URL(path, req.url) picks up the internal
-  // host:port when behind a reverse proxy).
   return new NextResponse(null, {
     status: 303,
     headers: { Location: path },
@@ -16,9 +18,20 @@ function redirectTo(path: string) {
 export async function POST(req: Request) {
   const form = await req.formData();
   const password = String(form.get("password") ?? "");
-  if (!checkPassword(password)) {
+  const ward = String(form.get("ward") ?? "");
+
+  if (ward === "__admin") {
+    if (!checkAdminPassword(password)) return redirectTo("/admin/login?error=1");
+    await createSession({ role: "admin" });
+    return redirectTo("/admin");
+  }
+
+  if (!WARDS.includes(ward as (typeof WARDS)[number])) {
     return redirectTo("/admin/login?error=1");
   }
-  await createSession();
+  if (!checkWardPassword(ward, password)) {
+    return redirectTo("/admin/login?error=1");
+  }
+  await createSession({ role: "ward", ward });
   return redirectTo("/admin");
 }

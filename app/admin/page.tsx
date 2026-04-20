@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { isAuthed } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import { listRegistrations } from "@/lib/storage";
 import { WARDS } from "@/lib/wards";
 
@@ -11,11 +11,18 @@ export default async function AdminPage({
 }: {
   searchParams: Promise<{ ward?: string }>;
 }) {
-  if (!(await isAuthed())) redirect("/admin/login");
+  const session = await getSession();
+  if (!session) redirect("/admin/login");
 
-  const { ward: wardFilter } = await searchParams;
+  const isAdmin = session.role === "admin";
+  const { ward: requestedFilter } = await searchParams;
+
   const all = await listRegistrations();
-  const rows = wardFilter ? all.filter((r) => r.ward === wardFilter) : all;
+  const visible = isAdmin ? all : all.filter((r) => r.ward === session.ward);
+
+  // Ward admins are locked to their ward; stake admins can filter.
+  const wardFilter = isAdmin ? requestedFilter : session.ward;
+  const rows = wardFilter ? visible.filter((r) => r.ward === wardFilter) : visible;
 
   const byWard = new Map<string, number>();
   for (const r of all) byWard.set(r.ward, (byWard.get(r.ward) ?? 0) + 1);
@@ -27,48 +34,54 @@ export default async function AdminPage({
     ? `/api/admin/export?ward=${encodeURIComponent(wardFilter)}`
     : "/api/admin/export";
 
+  const scopeLabel = isAdmin
+    ? `${all.length} total registrations${wardFilter ? ` • filtered to ${wardFilter}` : ""}`
+    : `${session.ward} — ${rows.length} ${rows.length === 1 ? "registration" : "registrations"}`;
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">NYS Admin</h1>
-          <p className="text-sm text-slate-600">
-            {all.length} total registrations{wardFilter ? ` • filtered to ${wardFilter}` : ""}
-          </p>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {isAdmin ? "NYS Admin" : `${session.ward} — NYS`}
+          </h1>
+          <p className="text-sm text-slate-600">{scopeLabel}</p>
         </div>
         <form method="POST" action="/api/admin/logout">
           <button className="btn-secondary text-sm">Sign out</button>
         </form>
       </header>
 
-      <section className="mt-6 grid gap-6 lg:grid-cols-3">
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-700">By ward</h2>
-          <ul className="mt-3 space-y-1 text-sm">
-            <li>
-              <Link
-                href="/admin"
-                className={!wardFilter ? "font-semibold text-brand-700" : "text-slate-700 hover:underline"}
-              >
-                All wards ({all.length})
-              </Link>
-            </li>
-            {WARDS.map((w) => (
-              <li key={w}>
+      <section className={`mt-6 grid gap-6 ${isAdmin ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}>
+        {isAdmin ? (
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-sm font-semibold text-slate-700">By ward</h2>
+            <ul className="mt-3 space-y-1 text-sm">
+              <li>
                 <Link
-                  href={`/admin?ward=${encodeURIComponent(w)}`}
-                  className={
-                    wardFilter === w
-                      ? "font-semibold text-brand-700"
-                      : "text-slate-700 hover:underline"
-                  }
+                  href="/admin"
+                  className={!wardFilter ? "font-semibold text-brand-700" : "text-slate-700 hover:underline"}
                 >
-                  {w} ({byWard.get(w) ?? 0})
+                  All wards ({all.length})
                 </Link>
               </li>
-            ))}
-          </ul>
-        </div>
+              {WARDS.map((w) => (
+                <li key={w}>
+                  <Link
+                    href={`/admin?ward=${encodeURIComponent(w)}`}
+                    className={
+                      wardFilter === w
+                        ? "font-semibold text-brand-700"
+                        : "text-slate-700 hover:underline"
+                    }
+                  >
+                    {w} ({byWard.get(w) ?? 0})
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
         <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-700">T-shirt counts</h2>
@@ -91,37 +104,44 @@ export default async function AdminPage({
         <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-700">Export</h2>
           <p className="mt-2 text-sm text-slate-600">
-            Download a CSV of the{wardFilter ? " selected ward's" : " full"} roster.
+            Download a CSV of the
+            {isAdmin
+              ? wardFilter
+                ? " selected ward's"
+                : " full"
+              : ""} roster.
           </p>
           <a href={exportHref} className="btn-primary mt-3 w-full">Download CSV</a>
         </div>
       </section>
 
-      <section className="mt-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-700">Registration QR code</h2>
-            <p className="mt-1 text-sm text-slate-600">
-              Share this QR on flyers or post it in the ward building. Parents
-              scan it to reach the registration form.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-3">
-              <Link href="/share" className="btn-primary">
-                Open share / print page
-              </Link>
-              <a href="/qr-code.jpg" download className="btn-secondary">
-                Download QR image
-              </a>
+      {isAdmin ? (
+        <section className="mt-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-sm font-semibold text-slate-700">Registration QR code</h2>
+              <p className="mt-1 text-sm text-slate-600">
+                Share this QR on flyers or post it in the ward building. Parents
+                scan it to reach the registration form.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-3">
+                <Link href="/share" className="btn-primary">
+                  Open share / print page
+                </Link>
+                <a href="/qr-code.jpg" download className="btn-secondary">
+                  Download QR image
+                </a>
+              </div>
             </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/qr-code.jpg"
+              alt="QR code to the NYS registration page"
+              className="h-32 w-32 rounded border border-slate-200 object-contain"
+            />
           </div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/qr-code.jpg"
-            alt="QR code to the NYS registration page"
-            className="h-32 w-32 rounded border border-slate-200 object-contain"
-          />
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       <section className="mt-8 rounded-lg border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
@@ -129,7 +149,7 @@ export default async function AdminPage({
             <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
               <tr>
                 <Th>Youth</Th>
-                <Th>Ward</Th>
+                {isAdmin ? <Th>Ward</Th> : null}
                 <Th>Shirt</Th>
                 <Th>Parent</Th>
                 <Th>Contact</Th>
@@ -140,8 +160,8 @@ export default async function AdminPage({
             <tbody className="divide-y divide-slate-100">
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-500">
-                    No registrations{wardFilter ? ` for ${wardFilter}` : ""} yet.
+                  <td colSpan={isAdmin ? 7 : 6} className="py-8 text-center text-slate-500">
+                    No registrations{wardFilter && isAdmin ? ` for ${wardFilter}` : ""} yet.
                   </td>
                 </tr>
               ) : (
@@ -153,7 +173,7 @@ export default async function AdminPage({
                       </div>
                       <div className="text-xs text-slate-500">{r.youthBirthdate}</div>
                     </Td>
-                    <Td>{r.ward}</Td>
+                    {isAdmin ? <Td>{r.ward}</Td> : null}
                     <Td>{r.tshirtSize}</Td>
                     <Td>
                       <div>{r.parentName}</div>

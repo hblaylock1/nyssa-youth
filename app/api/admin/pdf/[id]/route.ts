@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isAuthed } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import { listRegistrations, readPdf } from "@/lib/storage";
 
 export const runtime = "nodejs";
@@ -8,11 +8,17 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  if (!(await isAuthed())) return new NextResponse("Unauthorized", { status: 401 });
+  const session = await getSession();
+  if (!session) return new NextResponse("Unauthorized", { status: 401 });
+
   const { id } = await params;
   const rows = await listRegistrations();
   const row = rows.find((r) => r.id === id);
   if (!row) return new NextResponse("Not found", { status: 404 });
+
+  if (session.role === "ward" && row.ward !== session.ward) {
+    return new NextResponse("Forbidden", { status: 403 });
+  }
 
   const bytes = await readPdf(row.pdfFile);
   const filename = `NYS-${row.ward}-${row.youthLastName}-${row.youthFirstName}.pdf`

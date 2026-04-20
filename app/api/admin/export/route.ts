@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isAuthed } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import { listRegistrations } from "@/lib/storage";
 
 export const runtime = "nodejs";
@@ -45,10 +45,13 @@ function csvEscape(v: unknown): string {
 }
 
 export async function GET(req: Request) {
-  if (!(await isAuthed())) return new NextResponse("Unauthorized", { status: 401 });
+  const session = await getSession();
+  if (!session) return new NextResponse("Unauthorized", { status: 401 });
 
   const url = new URL(req.url);
-  const ward = url.searchParams.get("ward");
+  const requested = url.searchParams.get("ward");
+  const ward = session.role === "ward" ? session.ward : requested;
+
   const rows = (await listRegistrations())
     .filter((r) => !ward || r.ward === ward)
     .sort((a, b) => a.ward.localeCompare(b.ward) || a.youthLastName.localeCompare(b.youthLastName));
