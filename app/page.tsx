@@ -10,7 +10,7 @@ export default function Page() {
         <img
           src="/logo.png"
           alt="Walk With Him"
-          className="mx-auto h-32 w-auto"
+          className="mx-auto h-56 w-auto"
         />
         <p className="mt-4 text-sm font-semibold uppercase tracking-wider text-brand-600">
           Nyssa Youth Spectacular

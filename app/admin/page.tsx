@@ -40,10 +40,10 @@ export default async function AdminPage({
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
-      <header className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <header className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Walk With Him" className="h-12 w-auto" />
+          <img src="/logo.png" alt="Walk With Him" className="h-20 w-auto" />
           <div>
             <h1 className="text-2xl font-bold text-slate-900">
               {isAdmin ? "NYS Admin" : `${session.ward} — NYS`}
@@ -51,9 +51,14 @@ export default async function AdminPage({
             <p className="text-sm text-slate-600">{scopeLabel}</p>
           </div>
         </div>
-        <form method="POST" action="/api/admin/logout">
-          <button className="btn-secondary text-sm">Sign out</button>
-        </form>
+        <div className="flex items-center gap-2">
+          <Link href="/" className="btn-secondary text-sm">
+            Registration page
+          </Link>
+          <form method="POST" action="/api/admin/logout">
+            <button className="btn-secondary text-sm">Sign out</button>
+          </form>
+        </div>
       </header>
 
       <section className={`mt-6 grid gap-6 ${isAdmin ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}>
