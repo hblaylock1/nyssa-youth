@@ -41,11 +41,15 @@ export default async function AdminPage({
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
       <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">
-            {isAdmin ? "NYS Admin" : `${session.ward} — NYS`}
-          </h1>
-          <p className="text-sm text-slate-600">{scopeLabel}</p>
+        <div className="flex items-center gap-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Walk With Him" className="h-12 w-auto" />
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">
+              {isAdmin ? "NYS Admin" : `${session.ward} — NYS`}
+            </h1>
+            <p className="text-sm text-slate-600">{scopeLabel}</p>
+          </div>
         </div>
         <form method="POST" action="/api/admin/logout">
           <button className="btn-secondary text-sm">Sign out</button>

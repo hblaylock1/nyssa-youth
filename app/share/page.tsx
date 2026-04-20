@@ -11,7 +11,13 @@ export default function SharePage() {
       <style>{`@media print { .no-print { display: none !important; } body { background: white; } }`}</style>
 
       <div className="text-center">
-        <p className="text-sm font-semibold uppercase tracking-wider text-brand-600">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo.png"
+          alt="Walk With Him"
+          className="mx-auto h-28 w-auto print:h-36"
+        />
+        <p className="mt-4 text-sm font-semibold uppercase tracking-wider text-brand-600">
           Nyssa Youth Spectacular
         </p>
         <h1 className="mt-1 text-3xl font-bold text-slate-900 print:text-4xl">
