@@ -231,6 +231,19 @@ export default function RegistrationForm({ wards, sizes }: Props) {
           </li>
           <li>Submit the donation.</li>
         </ol>
+
+        <figure className="mt-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/donation-example.png"
+            alt="Donation page with $35 entered on the Local — Youth Camp Registration line"
+            className="w-full rounded-md border border-amber-200 bg-white"
+          />
+          <figcaption className="mt-2 text-center text-xs text-amber-900/80">
+            What the donation page looks like — enter $35 on the
+            &ldquo;Local — Youth Camp Registration&rdquo; line.
+          </figcaption>
+        </figure>
       </section>
 
       <Section title="Permission & signature">
