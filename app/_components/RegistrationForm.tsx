@@ -240,12 +240,6 @@ export default function RegistrationForm({ wards, sizes }: Props) {
               alt="Donation page with $35 entered on the Local — Youth Camp Registration line"
               className="block w-full"
             />
-            {/* Highlight on the "Local — Youth Camp Registration" row */}
-            <div
-              className="pointer-events-none absolute left-0 right-0 rounded border-2 border-red-500 bg-yellow-300/30"
-              style={{ top: "82%", height: "11%" }}
-              aria-hidden
-            />
             {/* DEMO watermark */}
             <div
               className="pointer-events-none absolute inset-0 flex items-center justify-center"
