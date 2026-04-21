@@ -233,12 +233,29 @@ export default function RegistrationForm({ wards, sizes }: Props) {
         </ol>
 
         <figure className="mt-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/donation-example.png"
-            alt="Donation page with $35 entered on the Local — Youth Camp Registration line"
-            className="w-full rounded-md border border-amber-200 bg-white"
-          />
+          <div className="relative inline-block w-full overflow-hidden rounded-md border border-amber-200 bg-white">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/donation-example.png"
+              alt="Donation page with $35 entered on the Local — Youth Camp Registration line"
+              className="block w-full"
+            />
+            {/* Highlight on the "Local — Youth Camp Registration" row */}
+            <div
+              className="pointer-events-none absolute left-0 right-0 rounded border-2 border-red-500 bg-yellow-300/30"
+              style={{ top: "82%", height: "11%" }}
+              aria-hidden
+            />
+            {/* DEMO watermark */}
+            <div
+              className="pointer-events-none absolute inset-0 flex items-center justify-center"
+              aria-hidden
+            >
+              <span className="-rotate-12 text-7xl font-black tracking-widest text-red-500/25 sm:text-8xl">
+                DEMO
+              </span>
+            </div>
+          </div>
           <figcaption className="mt-2 text-center text-xs text-amber-900/80">
             What the donation page looks like — enter $35 on the
             &ldquo;Local — Youth Camp Registration&rdquo; line.
