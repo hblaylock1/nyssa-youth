@@ -164,12 +164,13 @@ export default async function AdminPage({
                 <Th>Contact</Th>
                 <Th>Signed</Th>
                 <Th>PDF</Th>
+                <Th>Edit</Th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={isAdmin ? 7 : 6} className="py-8 text-center text-slate-500">
+                  <td colSpan={isAdmin ? 8 : 7} className="py-8 text-center text-slate-500">
                     No registrations{wardFilter && isAdmin ? ` for ${wardFilter}` : ""} yet.
                   </td>
                 </tr>
@@ -201,6 +202,14 @@ export default async function AdminPage({
                       >
                         Download
                       </a>
+                    </Td>
+                    <Td>
+                      <Link
+                        href={`/admin/edit/${r.id}`}
+                        className="text-brand-600 hover:underline"
+                      >
+                        Edit
+                      </Link>
                     </Td>
                   </tr>
                 ))

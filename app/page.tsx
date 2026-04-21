@@ -18,7 +18,16 @@ export default function Page() {
         <h1 className="mt-1 text-3xl font-bold text-slate-900">
           Register your youth
         </h1>
-        <p className="mt-2 text-slate-600">
+        <div className="mx-auto mt-4 inline-block rounded-md border border-brand-200 bg-brand-50 px-5 py-3 text-left">
+          <p className="text-sm font-semibold uppercase tracking-wide text-brand-700">
+            Save the date
+          </p>
+          <p className="mt-1 text-lg font-semibold text-slate-900">
+            Saturday, June 6, 2026
+          </p>
+          <p className="text-sm text-slate-700">8:00 AM – 11:00 PM</p>
+        </div>
+        <p className="mt-4 text-slate-600">
           Fill out this form to sign your child up for NYS. A parent or
           guardian must sign the permission slip at the bottom. You&apos;ll
           get a confirmation page when you&apos;re done.

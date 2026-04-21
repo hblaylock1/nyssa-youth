@@ -57,3 +57,20 @@ export async function readPdf(pdfFile: string): Promise<Uint8Array> {
   const safe = path.basename(pdfFile);
   return fs.readFile(path.join(PDF_DIR, safe));
 }
+
+export type EditableFields = Omit<
+  Registration,
+  "id" | "createdAt" | "signedAt" | "pdfFile" | "signatureName"
+>;
+
+export async function updateRegistration(
+  id: string,
+  patch: Partial<EditableFields>,
+): Promise<Registration | null> {
+  const rows = await readAll();
+  const idx = rows.findIndex((r) => r.id === id);
+  if (idx === -1) return null;
+  rows[idx] = { ...rows[idx], ...patch };
+  await writeAll(rows);
+  return rows[idx];
+}

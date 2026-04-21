@@ -3,6 +3,16 @@
 import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type SignatureCanvas from "react-signature-canvas";
+import {
+  Field,
+  FullRow,
+  Grid,
+  QARow,
+  Section,
+  Select,
+  TableSection,
+  YesNoNoteRow,
+} from "./FormFields";
 
 const SignaturePad = dynamic(() => import("./ClientSignaturePad"), {
   ssr: false,
@@ -302,180 +312,5 @@ export default function RegistrationForm({ wards, sizes }: Props) {
         {submitting ? "Submitting…" : "Sign & register"}
       </button>
     </form>
-  );
-}
-
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="mb-4 text-lg font-semibold text-slate-900">{title}</h2>
-      <div className="space-y-4">{children}</div>
-    </section>
-  );
-}
-
-function TableSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-      <h2 className="border-b border-slate-200 bg-slate-50 px-6 py-3 text-base font-semibold text-slate-900">
-        {title}
-      </h2>
-      <div className="divide-y divide-slate-200">{children}</div>
-    </section>
-  );
-}
-
-function Grid({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div>;
-}
-
-function Field({
-  label,
-  name,
-  type = "text",
-  required,
-  placeholder,
-}: {
-  label: string;
-  name: string;
-  type?: string;
-  required?: boolean;
-  placeholder?: string;
-}) {
-  return (
-    <div>
-      <label className="label" htmlFor={name}>
-        {label}
-        {required ? <span className="text-red-500"> *</span> : null}
-      </label>
-      <input
-        id={name}
-        name={name}
-        type={type}
-        required={required}
-        placeholder={placeholder}
-        className="field"
-      />
-    </div>
-  );
-}
-
-function Select({
-  label,
-  name,
-  options,
-  required,
-}: {
-  label: string;
-  name: string;
-  options: string[];
-  required?: boolean;
-}) {
-  return (
-    <div>
-      <label className="label" htmlFor={name}>
-        {label}
-        {required ? <span className="text-red-500"> *</span> : null}
-      </label>
-      <select id={name} name={name} required={required} className="field" defaultValue="">
-        <option value="" disabled>
-          Select…
-        </option>
-        {options.map((o) => (
-          <option key={o} value={o}>
-            {o}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-}
-
-function YesNo({ name, required = true }: { name: string; required?: boolean }) {
-  const radio =
-    "h-4 w-4 border-slate-300 text-brand-600 focus:ring-brand-500";
-  return (
-    <div className="flex items-center gap-4 text-sm text-slate-700">
-      <label className="inline-flex items-center gap-1.5">
-        <input type="radio" name={name} value="yes" required={required} className={radio} />
-        Yes
-      </label>
-      <label className="inline-flex items-center gap-1.5">
-        <input type="radio" name={name} value="no" required={required} className={radio} />
-        No
-      </label>
-    </div>
-  );
-}
-
-function QARow({
-  question,
-  name,
-  explanationName,
-  explanationLabel,
-}: {
-  question: string;
-  name: string;
-  explanationName: string;
-  explanationLabel: string;
-}) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2">
-      <div className="border-b border-slate-200 p-4 md:border-b-0 md:border-r">
-        <p className="text-sm font-medium text-slate-800">{question}</p>
-        <div className="mt-2">
-          <YesNo name={name} />
-        </div>
-      </div>
-      <div className="p-4">
-        <label htmlFor={explanationName} className="mb-2 block text-sm text-slate-600">
-          {explanationLabel}
-        </label>
-        <input id={explanationName} name={explanationName} className="field" />
-      </div>
-    </div>
-  );
-}
-
-function YesNoNoteRow({
-  question,
-  name,
-  note,
-}: {
-  question: string;
-  name: string;
-  note: string;
-}) {
-  return (
-    <div className="p-4">
-      <p className="text-sm font-medium text-slate-800">{question}</p>
-      <div className="mt-2 flex flex-wrap items-center gap-4">
-        <YesNo name={name} />
-        <span className="text-sm text-slate-600">{note}</span>
-      </div>
-    </div>
-  );
-}
-
-function FullRow({ label, name }: { label: string; name: string }) {
-  return (
-    <div className="p-4">
-      <label htmlFor={name} className="mb-2 block text-sm font-medium text-slate-800">
-        {label}
-      </label>
-      <input id={name} name={name} className="field" />
-    </div>
   );
 }
