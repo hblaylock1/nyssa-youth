@@ -245,8 +245,8 @@ export default function RegistrationForm({ wards, sizes }: Props) {
               className="pointer-events-none absolute inset-0 flex items-center justify-center"
               aria-hidden
             >
-              <span className="-rotate-12 text-7xl font-black tracking-widest text-red-500/25 sm:text-8xl">
-                DEMO
+              <span className="-rotate-12 text-5xl font-black tracking-widest text-red-500/25 sm:text-7xl">
+                EXAMPLE
               </span>
             </div>
           </div>
