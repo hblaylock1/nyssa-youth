@@ -74,3 +74,20 @@ export async function updateRegistration(
   await writeAll(rows);
   return rows[idx];
 }
+
+export async function deleteRegistration(id: string): Promise<boolean> {
+  const rows = await readAll();
+  const idx = rows.findIndex((r) => r.id === id);
+  if (idx === -1) return false;
+  const [removed] = rows.splice(idx, 1);
+  await writeAll(rows);
+  if (removed?.pdfFile) {
+    const pdfPath = path.join(PDF_DIR, path.basename(removed.pdfFile));
+    try {
+      await fs.unlink(pdfPath);
+    } catch {
+      // already gone — fine
+    }
+  }
+  return true;
+}

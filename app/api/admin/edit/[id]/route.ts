@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import {
+  deleteRegistration,
   listRegistrations,
   updateRegistration,
   type EditableFields,
@@ -95,5 +96,24 @@ export async function POST(
   const updated = await updateRegistration(id, patch);
   if (!updated) return new NextResponse("Not found", { status: 404 });
 
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const session = await getSession();
+  if (!session) return new NextResponse("Unauthorized", { status: 401 });
+
+  const { id } = await params;
+  const existing = (await listRegistrations()).find((r) => r.id === id);
+  if (!existing) return new NextResponse("Not found", { status: 404 });
+  if (session.role === "ward" && existing.ward !== session.ward) {
+    return new NextResponse("Forbidden", { status: 403 });
+  }
+
+  const ok = await deleteRegistration(id);
+  if (!ok) return new NextResponse("Not found", { status: 404 });
   return NextResponse.json({ ok: true });
 }

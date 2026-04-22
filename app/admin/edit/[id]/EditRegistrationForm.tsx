@@ -30,7 +30,26 @@ export default function EditRegistrationForm({
   const router = useRouter();
   const r = registration;
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  async function onDelete() {
+    const ok = window.confirm(
+      `Delete the registration for ${r.youthFirstName} ${r.youthLastName}? This cannot be undone and will remove the signed PDF.`,
+    );
+    if (!ok) return;
+    setError(null);
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/edit/${r.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error((await res.text()) || "Delete failed");
+      router.push("/admin");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Delete failed");
+      setDeleting(false);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -167,17 +186,28 @@ export default function EditRegistrationForm({
         <p className="rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</p>
       ) : null}
 
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <button
           type="button"
-          onClick={() => router.push("/admin")}
-          className="btn-secondary"
+          onClick={onDelete}
+          disabled={deleting || submitting}
+          className="btn inline-flex items-center justify-center rounded-md border border-red-300 bg-white px-4 py-2 font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
         >
-          Cancel
+          {deleting ? "Deleting…" : "Delete registration"}
         </button>
-        <button type="submit" disabled={submitting} className="btn-primary">
-          {submitting ? "Saving…" : "Save changes"}
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => router.push("/admin")}
+            className="btn-secondary"
+            disabled={submitting || deleting}
+          >
+            Cancel
+          </button>
+          <button type="submit" disabled={submitting || deleting} className="btn-primary">
+            {submitting ? "Saving…" : "Save changes"}
+          </button>
+        </div>
       </div>
     </form>
   );
