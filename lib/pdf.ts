@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, rgb } from "pdf-lib";
 import type { NewRegistration } from "./types";
 
 const TEMPLATE_PATH = path.join(
@@ -31,6 +31,7 @@ export async function buildSignedPdf(data: NewRegistration): Promise<Uint8Array>
 
   const form = pdf.getForm();
   const today = new Date().toLocaleDateString();
+  const page = pdf.getPages()[0];
 
   const setText = (name: string, value: string) => {
     try {
@@ -39,13 +40,34 @@ export async function buildSignedPdf(data: NewRegistration): Promise<Uint8Array>
       // field missing in this template version — skip
     }
   };
-  const setCheck = (name: string, checked: boolean) => {
+
+  // Each Yes/No question is backed by a single PDFCheckBox with TWO widgets:
+  // widget 0 is the "Yes" box, widget 1 is the "No" box. pdf-lib's .check()
+  // only marks the first, so we draw an X on the correct widget and leave
+  // the form checkbox itself unchecked.
+  const markYesNo = (name: string, yes: boolean) => {
     try {
-      const f = form.getCheckBox(name);
-      if (checked) f.check();
-      else f.uncheck();
+      const field = form.getCheckBox(name);
+      field.uncheck();
+      const widgets = field.acroField.getWidgets();
+      const target = yes ? widgets[0] : widgets[1];
+      if (!target) return;
+      const r = target.getRectangle();
+      const pad = 1.5;
+      page.drawLine({
+        start: { x: r.x + pad, y: r.y + pad },
+        end: { x: r.x + r.width - pad, y: r.y + r.height - pad },
+        thickness: 1.2,
+        color: rgb(0, 0, 0),
+      });
+      page.drawLine({
+        start: { x: r.x + r.width - pad, y: r.y + pad },
+        end: { x: r.x + pad, y: r.y + r.height - pad },
+        thickness: 1.2,
+        color: rgb(0, 0, 0),
+      });
     } catch {
-      // skip
+      // field missing — skip
     }
   };
 
@@ -68,17 +90,16 @@ export async function buildSignedPdf(data: NewRegistration): Promise<Uint8Array>
   setText("Emergency contact parent or guardian", data.parentName);
   setText("Primary phone_1", data.parentPhone);
 
-  const allergies = (data.allergies ?? "").trim();
-  setCheck("Allergies", data.hasAllergies);
-  setText("Allergy explanation", allergies);
+  markYesNo("Allergies", data.hasAllergies);
+  setText("Allergy explanation", (data.allergies ?? "").trim());
   setText("List of Medications", data.medications ?? "");
 
-  setCheck("Special diet", data.specialDiet);
+  markYesNo("Special diet", data.specialDiet);
   setText("diet explanation", data.dietExplanation ?? "");
-  setCheck("Self Admin", data.selfAdminMeds);
-  setCheck("Surgery", data.recentSurgery);
+  markYesNo("Self Admin", data.selfAdminMeds);
+  markYesNo("Surgery", data.recentSurgery);
   setText("If yes please explain_2", data.surgeryExplanation ?? "");
-  setCheck("Chronic illness", data.chronicIllness);
+  markYesNo("Chronic illness", data.chronicIllness);
   setText("illness explanation", data.illnessExplanation ?? "");
   setText("Other limitations", data.otherLimitations ?? "");
   setText("Special needs", data.specialNeeds ?? "");
@@ -86,9 +107,6 @@ export async function buildSignedPdf(data: NewRegistration): Promise<Uint8Array>
   setText("Date", today);
   setText("Date_2", today);
 
-  // Stamp the drawn signature image on top of the parent/guardian signature
-  // field. We leave the field text empty and flatten afterwards so the image
-  // is the visible signature.
   const sigImage = await pdf.embedPng(signaturePng);
   stampSignature(
     pdf,
@@ -114,10 +132,9 @@ function stampSignature(
     const rect = widget.getRectangle();
     const page = pdf.getPages()[0];
 
-    // The field rectangle is only a text-line tall, which would crush the
-    // signature. Draw it at a readable height (up to ~45pt) centered on the
-    // field's width and allow it to extend above the field into the margin.
-    const targetHeight = 45;
+    // Draw the signature at a readable size, slightly below the field's
+    // baseline so it sits on the signature line.
+    const targetHeight = 28;
     const aspect = image.width / image.height;
     const maxWidth = Math.max(rect.width - 4, 1);
     let drawHeight = targetHeight;
@@ -127,8 +144,7 @@ function stampSignature(
       drawHeight = drawWidth / aspect;
     }
     const x = rect.x + (rect.width - drawWidth) / 2;
-    // Anchor to the bottom of the field so the signature sits on the line.
-    const y = rect.y;
+    const y = rect.y - 4;
     page.drawImage(image, { x, y, width: drawWidth, height: drawHeight });
   } catch {
     // field missing — skip stamping
