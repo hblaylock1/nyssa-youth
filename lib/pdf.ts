@@ -2,6 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { PDFDocument, rgb } from "pdf-lib";
 import type { NewRegistration } from "./types";
+import { formatMountainDate } from "./format";
 
 const TEMPLATE_PATH = path.join(
   process.cwd(),
@@ -30,7 +31,7 @@ export async function buildSignedPdf(data: NewRegistration): Promise<Uint8Array>
   while (pdf.getPageCount() > 1) pdf.removePage(1);
 
   const form = pdf.getForm();
-  const today = new Date().toLocaleDateString();
+  const today = formatMountainDate();
   const page = pdf.getPages()[0];
 
   const setText = (name: string, value: string) => {

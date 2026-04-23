@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { listRegistrations } from "@/lib/storage";
 import { WARDS } from "@/lib/wards";
+import { formatMountainDateTime } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -193,7 +194,7 @@ export default async function AdminPage({
                       <div>{r.parentPhone}</div>
                     </Td>
                     <Td className="whitespace-nowrap text-xs text-slate-500">
-                      {new Date(r.signedAt).toLocaleString()}
+                      {formatMountainDateTime(r.signedAt)}
                     </Td>
                     <Td>
                       <a
