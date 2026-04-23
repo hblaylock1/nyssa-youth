@@ -13,6 +13,11 @@ import {
   TableSection,
   YesNoNoteRow,
 } from "./FormFields";
+import {
+  BIRTHDATE_ERROR,
+  MAX_BIRTHDATE,
+  isBirthdateAllowed,
+} from "@/lib/eligibility";
 
 const SignaturePad = dynamic(() => import("./ClientSignaturePad"), {
   ssr: false,
@@ -42,6 +47,11 @@ export default function RegistrationForm({ wards, sizes }: Props) {
 
     const form = e.currentTarget;
     const fd = new FormData(form);
+    const birthdate = String(fd.get("youthBirthdate") ?? "");
+    if (!isBirthdateAllowed(birthdate)) {
+      setError(BIRTHDATE_ERROR);
+      return;
+    }
     const raw = Object.fromEntries(fd.entries()) as Record<string, string>;
 
     const bool = (name: string) => fd.get(name) === "yes";
@@ -128,7 +138,14 @@ export default function RegistrationForm({ wards, sizes }: Props) {
         <Grid>
           <Field label="First name" name="youthFirstName" required />
           <Field label="Last name" name="youthLastName" required />
-          <Field label="Birthdate" name="youthBirthdate" type="date" required />
+          <Field
+            label="Birthdate"
+            name="youthBirthdate"
+            type="date"
+            required
+            max={MAX_BIRTHDATE}
+            helpText="Must be born on or before Dec 31, 2012."
+          />
           <Select label="Gender" name="youthGender" required options={["Male", "Female"]} />
           <Select label="Ward / branch" name="ward" required options={wards} />
           <Select label="T-shirt size" name="tshirtSize" required options={sizes} />

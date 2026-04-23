@@ -45,6 +45,8 @@ export function Field({
   required,
   placeholder,
   defaultValue,
+  max,
+  helpText,
 }: {
   label: string;
   name: string;
@@ -52,6 +54,8 @@ export function Field({
   required?: boolean;
   placeholder?: string;
   defaultValue?: string;
+  max?: string;
+  helpText?: string;
 }) {
   return (
     <div>
@@ -66,8 +70,12 @@ export function Field({
         required={required}
         placeholder={placeholder}
         defaultValue={defaultValue ?? ""}
+        max={max}
         className="field"
       />
+      {helpText ? (
+        <p className="mt-1 text-xs text-slate-500">{helpText}</p>
+      ) : null}
     </div>
   );
 }

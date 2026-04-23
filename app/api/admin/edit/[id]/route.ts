@@ -7,6 +7,7 @@ import {
   type EditableFields,
 } from "@/lib/storage";
 import { TSHIRT_SIZES, WARDS } from "@/lib/wards";
+import { BIRTHDATE_ERROR, isBirthdateAllowed } from "@/lib/eligibility";
 
 export const runtime = "nodejs";
 
@@ -57,6 +58,9 @@ export async function POST(
   }
   if (!TSHIRT_SIZES.includes(body.tshirtSize as (typeof TSHIRT_SIZES)[number])) {
     return new NextResponse("Invalid t-shirt size", { status: 400 });
+  }
+  if (!isBirthdateAllowed(body.youthBirthdate as string)) {
+    return new NextResponse(BIRTHDATE_ERROR, { status: 400 });
   }
   // Ward users cannot move records out of their ward.
   if (session.role === "ward" && body.ward !== session.ward) {

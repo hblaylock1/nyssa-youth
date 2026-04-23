@@ -13,6 +13,11 @@ import {
   TableSection,
   YesNoNoteRow,
 } from "@/app/_components/FormFields";
+import {
+  BIRTHDATE_ERROR,
+  MAX_BIRTHDATE,
+  isBirthdateAllowed,
+} from "@/lib/eligibility";
 
 interface Props {
   registration: Registration;
@@ -56,6 +61,11 @@ export default function EditRegistrationForm({
     setError(null);
 
     const fd = new FormData(e.currentTarget);
+    const birthdate = String(fd.get("youthBirthdate") ?? "");
+    if (!isBirthdateAllowed(birthdate)) {
+      setError(BIRTHDATE_ERROR);
+      return;
+    }
     const raw = Object.fromEntries(fd.entries()) as Record<string, string>;
     const bool = (name: string) => fd.get(name) === "yes";
     const body = {
@@ -89,7 +99,15 @@ export default function EditRegistrationForm({
         <Grid>
           <Field label="First name" name="youthFirstName" required defaultValue={r.youthFirstName} />
           <Field label="Last name" name="youthLastName" required defaultValue={r.youthLastName} />
-          <Field label="Birthdate" name="youthBirthdate" type="date" required defaultValue={r.youthBirthdate} />
+          <Field
+            label="Birthdate"
+            name="youthBirthdate"
+            type="date"
+            required
+            defaultValue={r.youthBirthdate}
+            max={MAX_BIRTHDATE}
+            helpText="Must be born on or before Dec 31, 2012."
+          />
           <Select label="Gender" name="youthGender" required options={["Male", "Female"]} defaultValue={r.youthGender} />
           {canChangeWard ? (
             <Select label="Ward / branch" name="ward" required options={wards} defaultValue={r.ward} />

@@ -3,6 +3,7 @@ import { createRegistration } from "@/lib/storage";
 import { buildSignedPdf } from "@/lib/pdf";
 import type { NewRegistration } from "@/lib/types";
 import { WARDS, TSHIRT_SIZES } from "@/lib/wards";
+import { BIRTHDATE_ERROR, isBirthdateAllowed } from "@/lib/eligibility";
 
 export const runtime = "nodejs";
 
@@ -43,6 +44,9 @@ export async function POST(req: Request) {
   }
   if (!TSHIRT_SIZES.includes(body.tshirtSize as (typeof TSHIRT_SIZES)[number])) {
     return new NextResponse("Invalid t-shirt size", { status: 400 });
+  }
+  if (!isBirthdateAllowed(body.youthBirthdate as string)) {
+    return new NextResponse(BIRTHDATE_ERROR, { status: 400 });
   }
   if (!body.signatureDataUrl!.startsWith("data:image/png")) {
     return new NextResponse("Invalid signature", { status: 400 });
