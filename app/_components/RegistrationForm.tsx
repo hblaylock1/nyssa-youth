@@ -15,24 +15,28 @@ import {
 } from "./FormFields";
 import {
   BIRTHDATE_ERROR,
+  BIRTHDATE_HELP,
   MAX_BIRTHDATE,
   isBirthdateAllowed,
 } from "@/lib/eligibility";
+import { EVENT, SINGLE_WARD } from "@/lib/event";
 
 const SignaturePad = dynamic(() => import("./ClientSignaturePad"), {
   ssr: false,
 });
 
 interface Props {
-  wards: string[];
   sizes: string[];
 }
 
-export default function RegistrationForm({ wards, sizes }: Props) {
+export default function RegistrationForm({ sizes }: Props) {
   const sigRef = useRef<SignatureCanvas | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ id: string } | null>(null);
+
+  const wards = [...EVENT.wards];
+  const fee = EVENT.fee;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -57,6 +61,7 @@ export default function RegistrationForm({ wards, sizes }: Props) {
     const bool = (name: string) => fd.get(name) === "yes";
     const body = {
       ...raw,
+      ward: SINGLE_WARD ?? raw.ward,
       specialDiet: bool("specialDiet"),
       hasAllergies: bool("hasAllergies"),
       selfAdminMeds: bool("selfAdminMeds"),
@@ -95,19 +100,23 @@ export default function RegistrationForm({ wards, sizes }: Props) {
           Thanks — we&apos;ve recorded the permission slip. You can download a
           signed copy below for your records.
         </p>
-        <p className="mt-3 rounded-md bg-amber-50 p-3 text-sm text-amber-900">
-          <span className="font-semibold">Don&apos;t forget the $35 fee.</span>{" "}
-          Pay online at{" "}
-          <a
-            href="https://donations.churchofjesuschrist.org/"
-            target="_blank"
-            rel="noreferrer"
-            className="underline font-medium"
-          >
-            donations.churchofjesuschrist.org
-          </a>{" "}
-          under <span className="font-semibold">Local — Youth Camp Registration</span>.
-        </p>
+        {fee ? (
+          <p className="mt-3 rounded-md bg-amber-50 p-3 text-sm text-amber-900">
+            <span className="font-semibold">
+              Don&apos;t forget the ${fee.amount} fee.
+            </span>{" "}
+            Pay online at{" "}
+            <a
+              href="https://donations.churchofjesuschrist.org/"
+              target="_blank"
+              rel="noreferrer"
+              className="underline font-medium"
+            >
+              donations.churchofjesuschrist.org
+            </a>{" "}
+            under <span className="font-semibold">{fee.donationLine}</span>.
+          </p>
+        ) : null}
         <div className="mt-4 flex gap-3">
           <a
             className="btn-primary"
@@ -143,11 +152,15 @@ export default function RegistrationForm({ wards, sizes }: Props) {
             name="youthBirthdate"
             type="date"
             required
-            max={MAX_BIRTHDATE}
-            helpText="Must be born on or before Dec 31, 2012."
+            max={MAX_BIRTHDATE ?? undefined}
+            helpText={BIRTHDATE_HELP}
           />
           <Select label="Gender" name="youthGender" required options={["Male", "Female"]} />
-          <Select label="Ward / branch" name="ward" required options={wards} />
+          {SINGLE_WARD ? (
+            <input type="hidden" name="ward" value={SINGLE_WARD} />
+          ) : (
+            <Select label="Ward / branch" name="ward" required options={wards} />
+          )}
           <Select label="T-shirt size" name="tshirtSize" required options={sizes} />
         </Grid>
       </Section>
@@ -218,61 +231,64 @@ export default function RegistrationForm({ wards, sizes }: Props) {
         </Grid>
       </Section>
 
-      <section className="rounded-lg border border-amber-300 bg-amber-50 p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-amber-900">
-          Registration fee: $35 per youth
-        </h2>
-        <p className="mt-2 text-sm text-amber-900">
-          Pay online through the Church&apos;s donations portal. On the
-          donation slip, enter <span className="font-semibold">$35</span> in
-          the <span className="font-semibold">Local — Youth Camp
-          Registration</span> line.
-        </p>
-        <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-amber-900">
-          <li>
-            Sign in at{" "}
-            <a
-              href="https://donations.churchofjesuschrist.org/"
-              target="_blank"
-              rel="noreferrer"
-              className="underline font-medium"
-            >
-              donations.churchofjesuschrist.org
-            </a>{" "}
-            (or use the Member Tools app).
-          </li>
-          <li>Start a new donation for your ward.</li>
-          <li>
-            Put <span className="font-semibold">$35</span> under{" "}
-            <span className="font-semibold">Local — Youth Camp Registration</span>.
-          </li>
-          <li>Submit the donation.</li>
-        </ol>
+      {fee ? (
+        <section className="rounded-lg border border-amber-300 bg-amber-50 p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-amber-900">
+            Registration fee: ${fee.amount} per youth
+          </h2>
+          <p className="mt-2 text-sm text-amber-900">
+            Pay online through the Church&apos;s donations portal. On the
+            donation slip, enter <span className="font-semibold">${fee.amount}</span>{" "}
+            in the <span className="font-semibold">{fee.donationLine}</span>{" "}
+            line.
+          </p>
+          <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-amber-900">
+            <li>
+              Sign in at{" "}
+              <a
+                href="https://donations.churchofjesuschrist.org/"
+                target="_blank"
+                rel="noreferrer"
+                className="underline font-medium"
+              >
+                donations.churchofjesuschrist.org
+              </a>{" "}
+              (or use the Member Tools app).
+            </li>
+            <li>Start a new donation for your ward.</li>
+            <li>
+              Put <span className="font-semibold">${fee.amount}</span> under{" "}
+              <span className="font-semibold">{fee.donationLine}</span>.
+            </li>
+            <li>Submit the donation.</li>
+          </ol>
 
-        <figure className="mt-4">
-          <div className="relative inline-block w-full overflow-hidden rounded-md border border-amber-200 bg-white">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/donation-example.png"
-              alt="Donation page with $35 entered on the Local — Youth Camp Registration line"
-              className="block w-full"
-            />
-            {/* DEMO watermark */}
-            <div
-              className="pointer-events-none absolute inset-0 flex items-center justify-center"
-              aria-hidden
-            >
-              <span className="-rotate-12 text-5xl font-black tracking-widest text-red-500/25 sm:text-7xl">
-                EXAMPLE
-              </span>
-            </div>
-          </div>
-          <figcaption className="mt-2 text-center text-xs text-amber-900/80">
-            What the donation page looks like — enter $35 on the
-            &ldquo;Local — Youth Camp Registration&rdquo; line.
-          </figcaption>
-        </figure>
-      </section>
+          {fee.showExampleImage ? (
+            <figure className="mt-4">
+              <div className="relative inline-block w-full overflow-hidden rounded-md border border-amber-200 bg-white">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/donation-example.png"
+                  alt={`Donation page with $${fee.amount} entered on the ${fee.donationLine} line`}
+                  className="block w-full"
+                />
+                <div
+                  className="pointer-events-none absolute inset-0 flex items-center justify-center"
+                  aria-hidden
+                >
+                  <span className="-rotate-12 text-5xl font-black tracking-widest text-red-500/25 sm:text-7xl">
+                    EXAMPLE
+                  </span>
+                </div>
+              </div>
+              <figcaption className="mt-2 text-center text-xs text-amber-900/80">
+                What the donation page looks like — enter ${fee.amount} on the
+                &ldquo;{fee.donationLine}&rdquo; line.
+              </figcaption>
+            </figure>
+          ) : null}
+        </section>
+      ) : null}
 
       <Section title="Permission & signature">
         <div className="space-y-3 rounded-md bg-slate-50 p-4 text-sm text-slate-700">

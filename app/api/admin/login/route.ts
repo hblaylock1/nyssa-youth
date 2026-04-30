@@ -4,7 +4,7 @@ import {
   checkWardPassword,
   createSession,
 } from "@/lib/auth";
-import { WARDS } from "@/lib/wards";
+import { EVENT } from "@/lib/event";
 
 export const runtime = "nodejs";
 
@@ -20,13 +20,20 @@ export async function POST(req: Request) {
   const password = String(form.get("password") ?? "");
   const ward = String(form.get("ward") ?? "");
 
+  // Single-event mode: no ward selection — admin password unlocks everything.
+  if (EVENT.authMode === "single") {
+    if (!checkAdminPassword(password)) return redirectTo("/admin/login?error=1");
+    await createSession({ role: "admin" });
+    return redirectTo("/admin");
+  }
+
   if (ward === "__admin") {
     if (!checkAdminPassword(password)) return redirectTo("/admin/login?error=1");
     await createSession({ role: "admin" });
     return redirectTo("/admin");
   }
 
-  if (!WARDS.includes(ward as (typeof WARDS)[number])) {
+  if (!EVENT.wards.includes(ward)) {
     return redirectTo("/admin/login?error=1");
   }
   if (!checkWardPassword(ward, password)) {

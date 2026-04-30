@@ -1,34 +1,32 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { EVENT } from "@/lib/event";
 
 export const metadata: Metadata = {
-  title: "Nyssa Youth Spectacular",
-  description:
-    "Register your youth for the Nyssa Youth Spectacular — Saturday, June 6, 2026.",
+  title: EVENT.title,
+  description: EVENT.metaDescription,
   icons: {
     icon: "/logo.png",
     shortcut: "/logo.png",
     apple: "/logo.png",
   },
   openGraph: {
-    title: "Nyssa Youth Spectacular",
-    description:
-      "Register your youth for the Nyssa Youth Spectacular — Saturday, June 6, 2026.",
+    title: EVENT.title,
+    description: EVENT.metaDescription,
     url: "/",
-    siteName: "Nyssa Youth Spectacular",
+    siteName: EVENT.title,
     images: [
       {
         url: "/logo.png",
-        alt: "Walk With Him — Nyssa Youth Spectacular",
+        alt: EVENT.title,
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "Nyssa Youth Spectacular",
-    description:
-      "Register your youth for the Nyssa Youth Spectacular — Saturday, June 6, 2026.",
+    title: EVENT.title,
+    description: EVENT.metaDescription,
     images: ["/logo.png"],
   },
 };

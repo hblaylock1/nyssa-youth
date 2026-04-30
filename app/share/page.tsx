@@ -1,8 +1,9 @@
 import Link from "next/link";
 import PrintShareButtons from "../_components/PrintShareButtons";
+import { EVENT } from "@/lib/event";
 
 export const metadata = {
-  title: "Share NYS — scan to register",
+  title: `Share ${EVENT.shortName} — scan to register`,
 };
 
 export default function SharePage() {
@@ -14,11 +15,11 @@ export default function SharePage() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/logo.png"
-          alt="Walk With Him"
+          alt={EVENT.title}
           className="mx-auto h-28 w-auto print:h-36"
         />
         <p className="mt-4 text-sm font-semibold uppercase tracking-wider text-brand-600">
-          Nyssa Youth Spectacular
+          {EVENT.title}
         </p>
         <h1 className="mt-1 text-3xl font-bold text-slate-900 print:text-4xl">
           Scan to register your youth
@@ -27,6 +28,9 @@ export default function SharePage() {
           Point your phone camera at the code below, then fill out the form and
           sign the permission slip.
         </p>
+        <p className="mt-2 text-sm text-slate-700 print:text-base">
+          {EVENT.dateLine} • {EVENT.timeLine}
+        </p>
       </div>
 
       <div className="mt-8 flex justify-center">
@@ -34,7 +38,7 @@ export default function SharePage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/qr-code.jpg"
-            alt="QR code to the NYS registration page"
+            alt={`QR code to the ${EVENT.shortName} registration page`}
             className="h-72 w-72 object-contain print:h-96 print:w-96"
           />
         </div>

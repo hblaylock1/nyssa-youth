@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { listRegistrations } from "@/lib/storage";
-import { WARDS } from "@/lib/wards";
+import { EVENT, SINGLE_WARD } from "@/lib/event";
 import { formatMountainDateTime } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +16,7 @@ export default async function AdminPage({
   if (!session) redirect("/admin/login");
 
   const isAdmin = session.role === "admin";
+  const showWardSidebar = isAdmin && !SINGLE_WARD;
   const { ward: requestedFilter } = await searchParams;
 
   const all = await listRegistrations();
@@ -35,8 +36,10 @@ export default async function AdminPage({
     ? `/api/admin/export?ward=${encodeURIComponent(wardFilter)}`
     : "/api/admin/export";
 
+  const titleSuffix = `${EVENT.shortName} Admin`;
+  const titleText = isAdmin ? titleSuffix : `${session.ward} — ${EVENT.shortName}`;
   const scopeLabel = isAdmin
-    ? `${all.length} total registrations${wardFilter ? ` • filtered to ${wardFilter}` : ""}`
+    ? `${all.length} total ${all.length === 1 ? "registration" : "registrations"}${wardFilter ? ` • filtered to ${wardFilter}` : ""}`
     : `${session.ward} — ${rows.length} ${rows.length === 1 ? "registration" : "registrations"}`;
 
   return (
@@ -44,11 +47,9 @@ export default async function AdminPage({
       <header className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Walk With Him" className="h-20 w-auto" />
+          <img src="/logo.png" alt={EVENT.title} className="h-20 w-auto" />
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">
-              {isAdmin ? "NYS Admin" : `${session.ward} — NYS`}
-            </h1>
+            <h1 className="text-2xl font-bold text-slate-900">{titleText}</h1>
             <p className="text-sm text-slate-600">{scopeLabel}</p>
           </div>
         </div>
@@ -62,8 +63,8 @@ export default async function AdminPage({
         </div>
       </header>
 
-      <section className={`mt-6 grid gap-6 ${isAdmin ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}>
-        {isAdmin ? (
+      <section className={`mt-6 grid gap-6 ${showWardSidebar ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}>
+        {showWardSidebar ? (
           <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-sm font-semibold text-slate-700">By ward</h2>
             <ul className="mt-3 space-y-1 text-sm">
@@ -75,7 +76,7 @@ export default async function AdminPage({
                   All wards ({all.length})
                 </Link>
               </li>
-              {WARDS.map((w) => (
+              {EVENT.wards.map((w) => (
                 <li key={w}>
                   <Link
                     href={`/admin?ward=${encodeURIComponent(w)}`}
@@ -115,7 +116,7 @@ export default async function AdminPage({
           <h2 className="text-sm font-semibold text-slate-700">Export</h2>
           <p className="mt-2 text-sm text-slate-600">
             Download a CSV of the
-            {isAdmin
+            {showWardSidebar
               ? wardFilter
                 ? " selected ward's"
                 : " full"
@@ -146,7 +147,7 @@ export default async function AdminPage({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/qr-code.jpg"
-              alt="QR code to the NYS registration page"
+              alt={`QR code to the ${EVENT.shortName} registration page`}
               className="h-32 w-32 rounded border border-slate-200 object-contain"
             />
           </div>
@@ -159,7 +160,7 @@ export default async function AdminPage({
             <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
               <tr>
                 <Th>Youth</Th>
-                {isAdmin ? <Th>Ward</Th> : null}
+                {showWardSidebar ? <Th>Ward</Th> : null}
                 <Th>Shirt</Th>
                 <Th>Parent</Th>
                 <Th>Contact</Th>
@@ -171,8 +172,8 @@ export default async function AdminPage({
             <tbody className="divide-y divide-slate-100">
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={isAdmin ? 8 : 7} className="py-8 text-center text-slate-500">
-                    No registrations{wardFilter && isAdmin ? ` for ${wardFilter}` : ""} yet.
+                  <td colSpan={showWardSidebar ? 8 : 7} className="py-8 text-center text-slate-500">
+                    No registrations{wardFilter && isAdmin && !SINGLE_WARD ? ` for ${wardFilter}` : ""} yet.
                   </td>
                 </tr>
               ) : (
@@ -184,7 +185,7 @@ export default async function AdminPage({
                       </div>
                       <div className="text-xs text-slate-500">{r.youthBirthdate}</div>
                     </Td>
-                    {isAdmin ? <Td>{r.ward}</Td> : null}
+                    {showWardSidebar ? <Td>{r.ward}</Td> : null}
                     <Td>{r.tshirtSize}</Td>
                     <Td>
                       <div>{r.parentName}</div>

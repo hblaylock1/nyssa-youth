@@ -15,6 +15,7 @@ import {
 } from "@/app/_components/FormFields";
 import {
   BIRTHDATE_ERROR,
+  BIRTHDATE_HELP,
   MAX_BIRTHDATE,
   isBirthdateAllowed,
 } from "@/lib/eligibility";
@@ -105,8 +106,8 @@ export default function EditRegistrationForm({
             type="date"
             required
             defaultValue={r.youthBirthdate}
-            max={MAX_BIRTHDATE}
-            helpText="Must be born on or before Dec 31, 2012."
+            max={MAX_BIRTHDATE ?? undefined}
+            helpText={BIRTHDATE_HELP}
           />
           <Select label="Gender" name="youthGender" required options={["Male", "Female"]} defaultValue={r.youthGender} />
           {canChangeWard ? (

@@ -3,24 +3,13 @@ import path from "node:path";
 import { PDFDocument, rgb } from "pdf-lib";
 import type { NewRegistration } from "./types";
 import { formatMountainDate } from "./format";
+import { EVENT } from "./event";
 
 const TEMPLATE_PATH = path.join(
   process.cwd(),
   "public",
   "parental_or_guardian_permission_medical_release.pdf",
 );
-
-// Edit these once the event details are finalized; they flow into the
-// corresponding fields of every generated permission slip.
-const EVENT_INFO = {
-  event: "Nyssa Youth Spectacular",
-  datesOfEvent: "06/06/2026",
-  description: "",
-  stake: "Nyssa Stake",
-  leader: "Kurt Romans",
-  leaderPhone: "541-212-0409",
-  leaderEmail: "",
-};
 
 export async function buildSignedPdf(data: NewRegistration): Promise<Uint8Array> {
   const signaturePng = dataUrlToBytes(data.signatureDataUrl);
@@ -72,14 +61,14 @@ export async function buildSignedPdf(data: NewRegistration): Promise<Uint8Array>
     }
   };
 
-  setText("Event", EVENT_INFO.event);
-  setText("Dates of event", EVENT_INFO.datesOfEvent);
-  setText("Event description", EVENT_INFO.description);
+  setText("Event", EVENT.pdf.event);
+  setText("Dates of event", EVENT.pdf.datesOfEvent);
+  setText("Event description", EVENT.pdf.description);
   setText("Ward", data.ward);
-  setText("Stake", EVENT_INFO.stake);
-  setText("Event or activity leader", EVENT_INFO.leader);
-  setText("Event or activity leaders phone number", EVENT_INFO.leaderPhone);
-  setText("Event or activity leaders email", EVENT_INFO.leaderEmail);
+  setText("Stake", EVENT.pdf.stake);
+  setText("Event or activity leader", EVENT.pdf.leader);
+  setText("Event or activity leaders phone number", EVENT.pdf.leaderPhone);
+  setText("Event or activity leaders email", EVENT.pdf.leaderEmail);
 
   setText("Participant", `${data.youthFirstName} ${data.youthLastName}`);
   setText("Date of birth", data.youthBirthdate);
