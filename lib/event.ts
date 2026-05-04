@@ -68,47 +68,36 @@ export interface EventConfig {
 // >>> EDIT BELOW FOR EACH EVENT <<<
 // =============================================================================
 export const EVENT: EventConfig = {
-  shortName: "NYS",
-  title: "Nyssa Youth Spectacular",
+  shortName: "Girls Camp",
+  title: "Parma 1st Ward Girls Camp",
   metaDescription:
-    "Register your youth for the Nyssa Youth Spectacular — Saturday, June 6, 2026.",
+    "Register your young woman for the Parma 1st Ward Girls Camp — June 25–27, 2026.",
 
-  dateBannerLabel: "Save the date",
-  dateLine: "Saturday, June 6, 2026",
-  timeLine: "8:00 AM – 11:00 PM",
+  dateBannerLabel: "Camp dates",
+  dateLine: "Thursday – Saturday, June 25 – 27, 2026",
+  timeLine: "",
 
   pdf: {
-    event: "Nyssa Youth Spectacular",
-    datesOfEvent: "06/06/2026",
+    event: "Parma 1st Ward Girls Camp",
+    datesOfEvent: "06/25/2026 – 06/27/2026",
     description: "",
     stake: "Nyssa Stake",
-    leader: "Kurt Romans",
-    leaderPhone: "541-212-0409",
+    leader: "",
+    leaderPhone: "",
     leaderEmail: "",
   },
 
-  maxBirthdate: "2012-12-31",
+  maxBirthdate: null,
 
-  wards: [
-    "Nyssa 1st Ward",
-    "Nyssa 2nd Ward",
-    "Nyssa 3rd Ward",
-    "Owyhee Ward",
-    "Parma 1st Ward",
-    "Parma 2nd Ward",
-    "Parma 3rd Ward",
-    "Vale 1st Ward",
-    "Vale 2nd Ward",
-    "Other",
-  ],
+  wards: ["Parma 1st Ward"],
 
   fee: {
-    amount: 35,
+    amount: 25,
     donationLine: "Local — Youth Camp Registration",
     showExampleImage: true,
   },
 
-  authMode: "stake",
+  authMode: "single",
 };
 
 export const SINGLE_WARD = EVENT.wards.length === 1 ? EVENT.wards[0] : null;
