@@ -45,13 +45,9 @@ export default async function AdminPage({
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
       <header className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt={EVENT.title} className="h-20 w-auto" />
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">{titleText}</h1>
-            <p className="text-sm text-slate-600">{scopeLabel}</p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">{titleText}</h1>
+          <p className="text-sm text-slate-600">{scopeLabel}</p>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/" className="btn-secondary text-sm">

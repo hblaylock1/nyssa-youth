@@ -6,13 +6,7 @@ export default function Page() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
       <header className="mb-8 text-center">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/logo.png"
-          alt={EVENT.title}
-          className="mx-auto h-56 w-auto"
-        />
-        <p className="mt-4 text-sm font-semibold uppercase tracking-wider text-brand-600">
+        <p className="text-sm font-semibold uppercase tracking-wider text-brand-600">
           {EVENT.title}
         </p>
         <h1 className="mt-1 text-3xl font-bold text-slate-900">

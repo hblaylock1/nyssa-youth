@@ -80,10 +80,11 @@ export const EVENT: EventConfig = {
   pdf: {
     event: "Parma 1st Ward Girls Camp",
     datesOfEvent: "06/25/2026 – 06/27/2026",
-    description: "",
+    description:
+      "Girls camp for summer 2026, camping in tents and going on a hike.",
     stake: "Nyssa Stake",
-    leader: "",
-    leaderPhone: "",
+    leader: "Desiree Lewis",
+    leaderPhone: "(208) 880-0588",
     leaderEmail: "",
   },
 
