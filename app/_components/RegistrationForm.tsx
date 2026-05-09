@@ -31,12 +31,32 @@ interface Props {
 
 export default function RegistrationForm({ sizes }: Props) {
   const sigRef = useRef<SignatureCanvas | null>(null);
+  const firstInvalidRef = useRef<HTMLElement | null>(null);
+  const invalidTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ id: string } | null>(null);
 
   const wards = [...EVENT.wards];
   const fee = EVENT.fee;
+
+  // iOS Safari blocks submission on the first invalid field but doesn't
+  // scroll it into view, so the user just sees the button flash with no
+  // explanation. Catch the invalid events ourselves, surface a banner, and
+  // jump to the first offending field.
+  function handleInvalidCapture(e: React.FormEvent<HTMLFormElement>) {
+    const target = e.target as HTMLElement;
+    if (!firstInvalidRef.current) firstInvalidRef.current = target;
+    if (invalidTimerRef.current) clearTimeout(invalidTimerRef.current);
+    invalidTimerRef.current = setTimeout(() => {
+      const el = firstInvalidRef.current;
+      firstInvalidRef.current = null;
+      invalidTimerRef.current = null;
+      if (!el) return;
+      setError("Please fill out all required fields, then submit again.");
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 0);
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -142,7 +162,11 @@ export default function RegistrationForm({ sizes }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-8">
+    <form
+      onSubmit={onSubmit}
+      onInvalidCapture={handleInvalidCapture}
+      className="space-y-8"
+    >
       <Section title="Youth information">
         <Grid>
           <Field label="First name" name="youthFirstName" required />
