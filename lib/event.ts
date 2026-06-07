@@ -73,7 +73,7 @@ export const EVENT: EventConfig = {
     leaderEmail: "",
   },
 
-  maxBirthdate: "2012-12-31",
+  maxBirthdate: null,
 
   wards: ["Parma 1st Ward"],
 
