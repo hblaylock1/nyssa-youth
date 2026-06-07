@@ -108,7 +108,7 @@ export const EVENT: EventConfig = {
     showExampleImage: true,
   },
 
-  authMode: "stake",
+  authMode: "single",
 };
 
 export const SINGLE_WARD = EVENT.wards.length === 1 ? EVENT.wards[0] : null;
