@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { listRegistrations } from "@/lib/storage";
-import { TSHIRT_SIZES, WARDS } from "@/lib/wards";
+import { WARDS } from "@/lib/wards";
 import EditRegistrationForm from "./EditRegistrationForm";
 
 export const dynamic = "force-dynamic";
@@ -42,7 +42,6 @@ export default async function EditPage({
       <EditRegistrationForm
         registration={row}
         wards={[...WARDS]}
-        sizes={[...TSHIRT_SIZES]}
         canChangeWard={session.role === "admin"}
       />
     </main>

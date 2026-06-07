@@ -25,11 +25,7 @@ const SignaturePad = dynamic(() => import("./ClientSignaturePad"), {
   ssr: false,
 });
 
-interface Props {
-  sizes: string[];
-}
-
-export default function RegistrationForm({ sizes }: Props) {
+export default function RegistrationForm() {
   const sigRef = useRef<SignatureCanvas | null>(null);
   const firstInvalidRef = useRef<HTMLElement | null>(null);
   const invalidTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -185,7 +181,6 @@ export default function RegistrationForm({ sizes }: Props) {
           ) : (
             <Select label="Ward / branch" name="ward" required options={wards} />
           )}
-          <Select label="T-shirt size" name="tshirtSize" required options={sizes} />
         </Grid>
       </Section>
 

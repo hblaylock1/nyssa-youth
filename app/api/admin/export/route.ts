@@ -13,7 +13,6 @@ const COLUMNS: { key: keyof Row; label: string }[] = [
   { key: "youthLastName", label: "Youth last" },
   { key: "youthBirthdate", label: "Birthdate" },
   { key: "youthGender", label: "Gender" },
-  { key: "tshirtSize", label: "Shirt" },
   { key: "address", label: "Address" },
   { key: "city", label: "City" },
   { key: "state", label: "State" },

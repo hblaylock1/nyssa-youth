@@ -8,7 +8,6 @@ export interface Registration {
   youthBirthdate: string;
   youthGender: string;
   ward: string;
-  tshirtSize: string;
 
   // Address
   address: string;
