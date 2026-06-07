@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { listRegistrations, readPdf } from "@/lib/storage";
+import { EVENT } from "@/lib/event";
 
 export const runtime = "nodejs";
 
@@ -13,7 +14,7 @@ export async function GET(
   if (!row) return new NextResponse("Not found", { status: 404 });
 
   const bytes = await readPdf(row.pdfFile);
-  const filename = `NYS-${row.youthLastName}-${row.youthFirstName}.pdf`
+  const filename = `${EVENT.shortName}-${row.youthLastName}-${row.youthFirstName}.pdf`
     .replace(/[^a-zA-Z0-9._-]/g, "_");
   return new NextResponse(bytes as unknown as BodyInit, {
     headers: {
