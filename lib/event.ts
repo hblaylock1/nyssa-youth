@@ -68,22 +68,22 @@ export interface EventConfig {
 // >>> EDIT BELOW FOR EACH EVENT <<<
 // =============================================================================
 export const EVENT: EventConfig = {
-  shortName: "NYS",
-  title: "Nyssa Youth Spectacular",
+  shortName: "High Adventure",
+  title: "High Adventure",
   metaDescription:
-    "Register your youth for the Nyssa Youth Spectacular — Saturday, June 6, 2026.",
+    "Register your youth for High Adventure — July 8–11, 2026.",
 
   dateBannerLabel: "Save the date",
-  dateLine: "Saturday, June 6, 2026",
-  timeLine: "8:00 AM – 11:00 PM",
+  dateLine: "July 8–11, 2026",
+  timeLine: "Wednesday – Saturday",
 
   pdf: {
-    event: "Nyssa Youth Spectacular",
-    datesOfEvent: "06/06/2026",
+    event: "High Adventure",
+    datesOfEvent: "07/08/2026 – 07/11/2026",
     description: "",
     stake: "Nyssa Stake",
-    leader: "Kurt Romans",
-    leaderPhone: "541-212-0409",
+    leader: "Allen Stevenson",
+    leaderPhone: "208-695-4739",
     leaderEmail: "",
   },
 

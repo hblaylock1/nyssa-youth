@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { listRegistrations, readPdf } from "@/lib/storage";
+import { EVENT } from "@/lib/event";
 
 export const runtime = "nodejs";
 
@@ -21,7 +22,7 @@ export async function GET(
   }
 
   const bytes = await readPdf(row.pdfFile);
-  const filename = `NYS-${row.ward}-${row.youthLastName}-${row.youthFirstName}.pdf`
+  const filename = `${EVENT.shortName}-${row.ward}-${row.youthLastName}-${row.youthFirstName}.pdf`
     .replace(/[^a-zA-Z0-9._-]/g, "_");
   return new NextResponse(bytes as unknown as BodyInit, {
     headers: {
