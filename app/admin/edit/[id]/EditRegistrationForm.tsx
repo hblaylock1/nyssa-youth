@@ -23,14 +23,12 @@ import {
 interface Props {
   registration: Registration;
   wards: string[];
-  sizes: string[];
   canChangeWard: boolean;
 }
 
 export default function EditRegistrationForm({
   registration,
   wards,
-  sizes,
   canChangeWard,
 }: Props) {
   const router = useRouter();
@@ -119,7 +117,6 @@ export default function EditRegistrationForm({
               <input type="hidden" name="ward" value={r.ward} />
             </div>
           )}
-          <Select label="T-shirt size" name="tshirtSize" required options={sizes} defaultValue={r.tshirtSize} />
         </Grid>
       </Section>
 

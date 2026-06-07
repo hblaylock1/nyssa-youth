@@ -29,9 +29,6 @@ export default async function AdminPage({
   const byWard = new Map<string, number>();
   for (const r of all) byWard.set(r.ward, (byWard.get(r.ward) ?? 0) + 1);
 
-  const shirts = new Map<string, number>();
-  for (const r of rows) shirts.set(r.tshirtSize, (shirts.get(r.tshirtSize) ?? 0) + 1);
-
   const exportHref = wardFilter
     ? `/api/admin/export?ward=${encodeURIComponent(wardFilter)}`
     : "/api/admin/export";
@@ -63,7 +60,7 @@ export default async function AdminPage({
         </div>
       </header>
 
-      <section className={`mt-6 grid gap-6 ${showWardSidebar ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}>
+      <section className={`mt-6 grid gap-6 ${showWardSidebar ? "lg:grid-cols-2" : "lg:grid-cols-1"}`}>
         {showWardSidebar ? (
           <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-sm font-semibold text-slate-700">By ward</h2>
@@ -93,24 +90,6 @@ export default async function AdminPage({
             </ul>
           </div>
         ) : null}
-
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-700">T-shirt counts</h2>
-          {shirts.size === 0 ? (
-            <p className="mt-3 text-sm text-slate-500">No registrations yet.</p>
-          ) : (
-            <ul className="mt-3 grid grid-cols-3 gap-2 text-sm">
-              {[...shirts.entries()].sort().map(([size, n]) => (
-                <li
-                  key={size}
-                  className="rounded bg-slate-100 px-2 py-1 text-center font-medium text-slate-700"
-                >
-                  {size}: {n}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
 
         <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-700">Export</h2>
@@ -161,7 +140,6 @@ export default async function AdminPage({
               <tr>
                 <Th>Youth</Th>
                 {showWardSidebar ? <Th>Ward</Th> : null}
-                <Th>Shirt</Th>
                 <Th>Parent</Th>
                 <Th>Contact</Th>
                 <Th>Signed</Th>
@@ -172,7 +150,7 @@ export default async function AdminPage({
             <tbody className="divide-y divide-slate-100">
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={showWardSidebar ? 8 : 7} className="py-8 text-center text-slate-500">
+                  <td colSpan={showWardSidebar ? 7 : 6} className="py-8 text-center text-slate-500">
                     No registrations{wardFilter && isAdmin && !SINGLE_WARD ? ` for ${wardFilter}` : ""} yet.
                   </td>
                 </tr>
@@ -186,7 +164,6 @@ export default async function AdminPage({
                       <div className="text-xs text-slate-500">{r.youthBirthdate}</div>
                     </Td>
                     {showWardSidebar ? <Td>{r.ward}</Td> : null}
-                    <Td>{r.tshirtSize}</Td>
                     <Td>
                       <div>{r.parentName}</div>
                       <div className="text-xs text-slate-500">{r.parentEmail}</div>

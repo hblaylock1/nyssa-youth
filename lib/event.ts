@@ -3,20 +3,6 @@
 // GitHub, edit this file, swap public/logo.png + public/qr-code.jpg + the
 // church PDF if needed, and deploy. Nothing else should need touching.
 
-import type { TshirtSize } from "./wards";
-
-export const TSHIRT_SIZES = [
-  "Youth - Small",
-  "Youth - Medium",
-  "Youth - Large",
-  "Adult - Small",
-  "Adult - Medium",
-  "Adult - Large",
-  "Adult - XL",
-  "Adult - 2XL",
-  "Adult - 3XL",
-] as const satisfies readonly TshirtSize[];
-
 export interface FeeConfig {
   amount: number;
   donationLine: string;
@@ -89,18 +75,7 @@ export const EVENT: EventConfig = {
 
   maxBirthdate: "2012-12-31",
 
-  wards: [
-    "Nyssa 1st Ward",
-    "Nyssa 2nd Ward",
-    "Nyssa 3rd Ward",
-    "Owyhee Ward",
-    "Parma 1st Ward",
-    "Parma 2nd Ward",
-    "Parma 3rd Ward",
-    "Vale 1st Ward",
-    "Vale 2nd Ward",
-    "Other",
-  ],
+  wards: ["Parma 1st Ward"],
 
   fee: {
     amount: 35,

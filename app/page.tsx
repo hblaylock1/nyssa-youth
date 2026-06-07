@@ -1,6 +1,6 @@
 import Link from "next/link";
 import RegistrationForm from "./_components/RegistrationForm";
-import { EVENT, TSHIRT_SIZES } from "@/lib/event";
+import { EVENT } from "@/lib/event";
 
 export default function Page() {
   return (
@@ -34,7 +34,7 @@ export default function Page() {
         </p>
       </header>
 
-      <RegistrationForm sizes={[...TSHIRT_SIZES]} />
+      <RegistrationForm />
 
       <footer className="mt-10 flex justify-center gap-4 text-center text-sm text-slate-500">
         <Link href="/share" className="underline hover:text-slate-700">
