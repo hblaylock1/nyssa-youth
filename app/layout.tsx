@@ -17,11 +17,6 @@ const script = Playball({
 export const metadata: Metadata = {
   title: EVENT.title,
   description: EVENT.metaDescription,
-  icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
-  },
   openGraph: {
     title: EVENT.title,
     description: EVENT.metaDescription,
