@@ -95,7 +95,18 @@ export const EVENT: EventConfig = {
 
   maxBirthdate: null,
 
-  wards: ["Parma 1st Ward"],
+  wards: [
+    "Nyssa 1st Ward",
+    "Nyssa 2nd Ward",
+    "Nyssa 3rd Ward",
+    "Owyhee Ward",
+    "Parma 1st Ward",
+    "Parma 2nd Ward",
+    "Parma 3rd Ward",
+    "Vale 1st Ward",
+    "Vale 2nd Ward",
+    "Other",
+  ],
 
   fee: null,
 
