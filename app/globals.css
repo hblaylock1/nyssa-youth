@@ -25,3 +25,18 @@ body {
 .label {
   @apply block text-sm font-medium text-slate-700 mb-1;
 }
+
+.bg-stripes {
+  background-color: #dceafb;
+  background-image: repeating-linear-gradient(
+    90deg,
+    #c9dff6 0,
+    #c9dff6 48px,
+    #dceafb 48px,
+    #dceafb 108px
+  );
+}
+
+.text-shadow-navy {
+  text-shadow: 2px 2px 0 #1d3f72;
+}

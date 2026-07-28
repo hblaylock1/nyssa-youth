@@ -20,6 +20,12 @@ export interface EventConfig {
   dateLine: string; // e.g. "Saturday, June 6, 2026"
   timeLine: string; // e.g. "8:00 AM – 11:00 PM"
 
+  // Optional flyer-style copy on the landing page. null hides each block.
+  eyebrowLine: string | null; // small line above the title, e.g. who it's for
+  tagline: string | null; // short line under the title
+  reminders: { heading: string; body: string }[] | null; // "what to bring" callouts
+  themeGraphic: { lines: string[]; reference: string } | null; // sunburst motto + scripture
+
   // Values stamped into the church PDF's form fields
   pdf: {
     event: string;
@@ -62,6 +68,20 @@ export const EVENT: EventConfig = {
   dateBannerLabel: "Save the date",
   dateLine: "Saturday, August 22, 2026",
   timeLine: "11:00 AM – 4:00 PM at Camp Hycliffs",
+
+  eyebrowLine: "All Activity Days aged girls and boys (7–11 years old)",
+  tagline: "Join us for fun activities and lunch",
+  reminders: [
+    {
+      heading: "Please wear or bring",
+      body: "Clothes that can get wet, a towel, hat, and/or sunscreen.",
+    },
+    {
+      heading: "Please coordinate",
+      body: "Rides with your ward Primary presidency.",
+    },
+  ],
+  themeGraphic: { lines: ["Grow", "Your", "Light"], reference: "D&C 50:24" },
 
   pdf: {
     event: "Primary Super Activity",

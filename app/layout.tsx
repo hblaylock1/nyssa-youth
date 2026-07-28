@@ -1,6 +1,18 @@
 import type { Metadata } from "next";
+import { Alfa_Slab_One, Playball } from "next/font/google";
 import "./globals.css";
 import { EVENT } from "@/lib/event";
+
+const display = Alfa_Slab_One({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-display",
+});
+const script = Playball({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-script",
+});
 
 export const metadata: Metadata = {
   title: EVENT.title,
@@ -37,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${display.variable} ${script.variable}`}>
       <body>{children}</body>
     </html>
   );
