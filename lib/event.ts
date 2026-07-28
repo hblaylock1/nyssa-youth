@@ -54,22 +54,22 @@ export interface EventConfig {
 // >>> EDIT BELOW FOR EACH EVENT <<<
 // =============================================================================
 export const EVENT: EventConfig = {
-  shortName: "High Adventure",
-  title: "High Adventure",
+  shortName: "Primary Super Activity",
+  title: "Primary Super Activity",
   metaDescription:
-    "Register your youth for High Adventure — July 8–11, 2026.",
+    "Register your Activity Days child for the Primary Super Activity — August 22, 2026 at Camp Hycliffs.",
 
   dateBannerLabel: "Save the date",
-  dateLine: "July 8–11, 2026",
-  timeLine: "Wednesday – Saturday",
+  dateLine: "Saturday, August 22, 2026",
+  timeLine: "11:00 AM – 4:00 PM at Camp Hycliffs",
 
   pdf: {
-    event: "High Adventure",
-    datesOfEvent: "07/08/2026 – 07/11/2026",
-    description: "",
+    event: "Primary Super Activity",
+    datesOfEvent: "08/22/2026",
+    description: "Fun activities and lunch for Activity Days children (ages 7–11).",
     stake: "Nyssa Stake",
-    leader: "Allen Stevenson",
-    leaderPhone: "208-695-4739",
+    leader: "Megan Baker",
+    leaderPhone: "+1 (541) 212-4790",
     leaderEmail: "",
   },
 
@@ -77,11 +77,7 @@ export const EVENT: EventConfig = {
 
   wards: ["Parma 1st Ward"],
 
-  fee: {
-    amount: 35,
-    donationLine: "Local — Youth Camp Registration",
-    showExampleImage: true,
-  },
+  fee: null,
 
   authMode: "single",
 };
